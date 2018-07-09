@@ -119,6 +119,19 @@ def standardize_feat(df, on_cols):
     df[on_cols] = StandardScaler().fit_transform(df[on_cols])
     return df
 
+def train_test_split(df, dateCol, split_date = None, splitBySize = False, train_size=0.8):
+    if splitBySize:
+        used = set()
+        unique_days = [day for day in df[dateCol] if day not in used and (used.add(day) or True)]
+        split_date = unique_days[math.floor(len(unique_days) * train_size)]
+
+    split_index = df.index[df[dateCol] == split_date].tolist()[0]
+    # train_df = df.iloc[:split_index]
+    # test_df = df.iloc[split_index:]
+
+    # return train_df, test_df
+    return split_index
+
 
 
 

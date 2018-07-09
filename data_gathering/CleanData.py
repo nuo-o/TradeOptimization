@@ -32,10 +32,7 @@ class TimeSeriesData():
         if created_time_column != None:
             selected_feat.append(created_time_column)
 
-        if math.isnan(val_column):
-            self.file = df
-        else:
-            self.file = df[selected_feat]
+        self.file = df[selected_feat]
 
         self.dateCol = date_column
         self.fctTimeCol = created_time_column

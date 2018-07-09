@@ -1,12 +1,11 @@
 from utils.import_packages import *
 from xgboost import XGBClassifier, XGBRegressor
 import utils.hardcode_parameters as param
-from features.features import make_date_feature, make_lag_feat, standardize_feat, plot_feature_importance
+from features.features import make_date_feature, make_lag_feat, standardize_feat, plot_feature_importance,train_test_split
 from models.evaluation import cross_validation, Evaluator
 from sklearn.preprocessing import StandardScaler
-from features.train_test_split import train_test_split
 from data_gathering.Configure import Configuration
-
+from data_gathering.CleanData import TimeSeriesData
 
 
 def make_feat_pipeline(valCol, dateCol, lagdict, df, targetCol, standardize = True):
@@ -37,35 +36,36 @@ def make_feat_pipeline(valCol, dateCol, lagdict, df, targetCol, standardize = Tr
 
 
 if __name__ == '__main__':
-    configuration = Configuration()
-    df, df_config = configuration.readFile('final-diff')
-    selected_cols = [df_config.val_col, ]
-    dateCol = df_config.date_col
-    valCol = df_config.forecast_v.split(',')
-    save_result_df = pd.DataFrame()
+    df, df_config = Configuration().readFile('final-diff')
+    dateCol,valCol = df_config.date_col, df_config.forecast_v
+    target = 'Diff'
 
     df = df[df['missing_First_Forecast_Volume'] == 0]
-    df = df[]
-
-    # train_df,test_df = train_test_split(df, dateCol,splitBySize = True, train_size=0.8)
+    ts = TimeSeriesData(df, dateCol, valCol)
+    df = ts.file
 
     lag_values = {'yesterday': [96], \
                   'two_days': np.arange(96, 96 * 3), \
                   'same_time_before': [96, 96 * 2, 96 * 3], \
                   'around_time_before': [96, 97, 95 * 2, 96 * 2, 97 * 2]}
-    lag_dict = {'Diff': lag_values['same_time_before']}
+    lag_dict = {target: lag_values['same_time_before']}
 
-    X,y = make_feat_pipeline(valCol, dateCol, lag_dict, df, 'Diff', standardize=False)
+    X,y = make_feat_pipeline(valCol.split(','), dateCol, lag_dict, df, target, standardize=False)
+
     split = train_test_split(df, dateCol,splitBySize = True, train_size=0.8)
+
     train_x,test_x = X.iloc[:split], X.iloc[split:]
     train_y,test_y = y[:split], y[split:]
+
     model = XGBRegressor().fit(train_x,train_y)
     test_pred = model.predict(test_x)
+
     print('test:')
     metrics = Evaluator(test_pred, test_y).regression_metrics()
     print(metrics)
 
     # save prediction file
+    save_result_df = pd.DataFrame()
     save_result_df['DeliveryDate'] = df.iloc[split:][df_config.date_col]
     save_result_df['true_diff'] = test_y
     save_result_df['predict'] = test_pred
