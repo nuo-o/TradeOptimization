@@ -1,0 +1,953 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="dbf1f02a-d3e4-40fa-92df-0d292002c808" name="Default" comment="" />
+    <ignored path="data_gathering/data-copy/NLAuctionPrice.csv" />
+    <ignored path="data_gathering/data/clean_data.csv" />
+    <ignored path="data_gathering/data/data-description.txt" />
+    <ignored path="data_gathering/data/fileConfig - Copy.xlsx" />
+    <ignored path="data_gathering/data/fileConfig.xlsx" />
+    <ignored path="data_gathering/data/test_imb_demd.xlsx" />
+    <ignored path="data_gathering/data/test_imb_no_demd.xlsx" />
+    <ignored path="data_gathering/data/train_imb_demd.xlsx" />
+    <ignored path="data_gathering/data/train_imb_no_demd.xlsx" />
+    <ignored path="data_gathering/data/~$fileConfig.xlsx" />
+    <ignored path="data_gathering/data/weather-forecast/data1/averaged_solar_wind.xlsx" />
+    <ignored path="data_gathering/data/weather-forecast/data1/clean-solar-forecast.xlsx" />
+    <ignored path="data_gathering/data/weather-forecast/data1/clean-wind-forecast.xlsx" />
+    <ignored path="data_gathering/data/weather-forecast/data1/clean_solar_wind_df.xlsx" />
+    <ignored path="data_gathering/data/weather-forecast/data1/compete_solar_df.xlsx" />
+    <ignored path="data_gathering/data/weather-forecast/data1/compete_wind_df.xlsx" />
+    <ignored path="data_gathering/data/weather-forecast/data1/complete_solar_wind.xlsx" />
+    <ignored path="data_gathering/data/weather-forecast/data1/imputed_solar_wind.xlsx" />
+    <ignored path="data_gathering/data/weather-forecast/data1/local-solar.xlsx" />
+    <ignored path="data_gathering/data/weather-forecast/data1/solar_forecast_data_stanley.csv" />
+    <ignored path="data_gathering/data/weather-forecast/data1/tempt.xlsx" />
+    <ignored path="data_gathering/data/weather-forecast/avg_solar.xlsx" />
+    <ignored path="data_gathering/data/weather-forecast/avg_temperature.xlsx" />
+    <ignored path="data_gathering/data/weather-forecast/avg_wind.xlsx" />
+    <ignored path="data_gathering/data/weather-forecast/clean_temperature.xlsx" />
+    <ignored path="data_gathering/data/weather-forecast/final_solar.xlsx" />
+    <ignored path="data_gathering/data/weather-forecast/final_wind.xlsx" />
+    <ignored path="data_gathering/data/weather-forecast/solar-forecast.xlsx" />
+    <ignored path="data_gathering/data/weather-forecast/solar.xlsx" />
+    <ignored path="data_gathering/data/weather-forecast/solarmissingdata.csv" />
+    <ignored path="data_gathering/data/weather-forecast/temperaturemissingdata.csv" />
+    <ignored path="data_gathering/data/weather-forecast/wind-forecast.xlsx" />
+    <ignored path="data_gathering/data/weather-forecast/wind.xlsx" />
+    <ignored path="data_gathering/data/weather-forecast/windmissingdata.csv" />
+    <ignored path="data_gathering/data/weather-forecast/~$wind-forecast.xlsx" />
+    <ignored path="data_gathering/data/trade/avg-dayahead-price.xlsx" />
+    <ignored path="data_gathering/data/trade/weekend-trade-price.xlsx" />
+    <ignored path="data_gathering/data/temp/day_ahead_merge_power.xlsx" />
+    <ignored path="data_gathering/data/temp/debug.xlsx" />
+    <ignored path="data_gathering/data/temp/debug_merge.xlsx" />
+    <ignored path="data_gathering/data/temp/debug_merge2.xlsx" />
+    <ignored path="data_gathering/data/temp/debug_merged.xlsx" />
+    <ignored path="data_gathering/data/temp/full_power_df.xlsx" />
+    <ignored path="data_gathering/data/temp/imb_DA_power.xlsx" />
+    <ignored path="data_gathering/data/temp/imb_DA_power2.xlsx" />
+    <ignored path="data_gathering/data/temp/imb_dmd.xlsx" />
+    <ignored path="data_gathering/data/temp/imb_pos.xlsx" />
+    <ignored path="data_gathering/data/temp/imb_pos_dmd.xlsx" />
+    <ignored path="data_gathering/data/temp/imputed_solar_wind.xlsx" />
+    <ignored path="data_gathering/data/temp/merged_DA_imb_power_df.xlsx" />
+    <ignored path="data_gathering/data/temp/merged_with_demand.xlsx" />
+    <ignored path="data_gathering/data/temp/merged_without_demand.xlsx" />
+    <ignored path="data_gathering/data/temp/solar-forecast.xlsx" />
+    <ignored path="data_gathering/data/results/classification_acc/57.4553None.txt" />
+    <ignored path="data_gathering/data/results/classification_acc/66.817.txt" />
+    <ignored path="data_gathering/data/results/classification_acc/78.2641_new_DA.txt" />
+    <ignored path="data_gathering/data/results/diff_MAPE/missUsedActualVolumes/1192.8701707695732_improvedPNL.xlsx" />
+    <ignored path="data_gathering/data/results/diff_MAPE/missUsedActualVolumes/39.6821.xlsx" />
+    <ignored path="data_gathering/data/results/diff_MAPE/missUsedActualVolumes/39.xlsx" />
+    <ignored path="data_gathering/data/results/diff_MAPE/39.xlsx" />
+    <ignored path="data_gathering/data/position/_position.xlsx" />
+    <ignored path="data_gathering/data/position/diff_clean.xlsx" />
+    <ignored path="data_gathering/data/position/nordzee-wind-pnl.xlsx" />
+    <ignored path="data_gathering/data/position/nzwbaseline.xlsx" />
+    <ignored path="data_gathering/data/position/~$nzwbaseline.xlsx" />
+    <ignored path="data_gathering/data/imbalance/tennet15to18.csv" />
+    <ignored path="data_gathering/data/imbalance/tennet16to18.csv" />
+    <ignored path="data_gathering/data/features/datarobot.xlsx" />
+    <ignored path="data_gathering/data/features/diff_all.xlsx" />
+    <ignored path="data_gathering/data/features/~$diff_all.xlsx" />
+    <ignored path="data_gathering/data/demand/long-demand-forecast.xlsx" />
+    <ignored path="data_gathering/data/demand/short-demand-forecast.xlsx" />
+    <ignored path="data_gathering/data/day-ahead/day-ahead-price.csv" />
+    <ignored path="data_gathering/data/day-ahead/new-DA-price.xlsx" />
+    <ignored path="notebooks/.ipynb_checkpoints/1_DataPreprocess-checkpoint.ipynb" />
+    <ignored path="notebooks/.ipynb_checkpoints/2_baseline_-checkpoint.ipynb" />
+    <ignored path="notebooks/.ipynb_checkpoints/2_Feature-checkpoint.ipynb" />
+    <ignored path="notebooks/.ipynb_checkpoints/3_feature-engineering-checkpoint.ipynb" />
+    <ignored path="notebooks/.ipynb_checkpoints/4_classification_model-checkpoint.ipynb" />
+    <ignored path="notebooks/.ipynb_checkpoints/auto-regression-checkpoint.ipynb" />
+    <ignored path="notebooks/.ipynb_checkpoints/data-clean-checkpoint.ipynb" />
+    <ignored path="notebooks/.ipynb_checkpoints/have-a-try-checkpoint.ipynb" />
+    <ignored path="notebooks/.ipynb_checkpoints/select-feature-checkpoint.ipynb" />
+    <ignored path="notebooks/.ipynb_checkpoints/train-test-split-Copy1-checkpoint.ipynb" />
+    <ignored path="notebooks/.ipynb_checkpoints/Untitled-checkpoint.ipynb" />
+    <ignored path="notebooks/.ipynb_checkpoints/Untitled1-checkpoint.ipynb" />
+    <ignored path="notebooks/1_DataPreprocess.ipynb" />
+    <ignored path="notebooks/2_baseline_.ipynb" />
+    <ignored path="notebooks/2_Feature.ipynb" />
+    <ignored path="notebooks/3_feature-engineering.ipynb" />
+    <ignored path="notebooks/4_classification_model.ipynb" />
+    <ignored path="notebooks/auto-regression.ipynb" />
+    <ignored path="notebooks/data-clean.ipynb" />
+    <ignored path="notebooks/have-a-try.ipynb" />
+    <ignored path="notebooks/select-feature.ipynb" />
+    <ignored path="notebooks/train-test-split-Copy1.ipynb" />
+    <ignored path="notebooks/Untitled.ipynb" />
+    <ignored path="notebooks/Untitled1.ipynb" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="TRACKING_ENABLED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="evaluation.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/models/evaluation.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="520">
+              <caret line="101" column="33" selection-start-line="101" selection-start-column="33" selection-end-line="101" selection-end-column="33" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="DIFF_model.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/models/DIFF_model.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="740">
+              <caret line="44" column="35" selection-start-line="44" selection-start-column="35" selection-end-line="44" selection-end-column="35" />
+              <folding>
+                <element signature="e#0#35#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="evaluate_pnl.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/models/evaluate_pnl.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="380">
+              <caret line="23" column="69" selection-start-line="23" selection-start-column="69" selection-end-line="23" selection-end-column="69" />
+              <folding>
+                <element signature="e#0#35#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Configure.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/data_gathering/Configure.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="460">
+              <caret line="24" selection-start-line="24" selection-end-line="24" />
+              <folding>
+                <element signature="e#0#35#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="CleanData.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/data_gathering/CleanData.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="20">
+              <caret line="1" column="41" selection-start-line="1" selection-start-column="41" selection-end-line="1" selection-end-column="41" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="diff.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/features/diff.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="280">
+              <caret line="19" selection-start-line="19" selection-end-line="20" selection-end-column="56" />
+              <folding>
+                <element signature="e#0#35#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="features.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/features/features.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1780">
+              <caret line="93" column="22" selection-start-line="93" selection-start-column="22" selection-end-line="93" selection-end-column="22" />
+              <folding>
+                <element signature="e#0#35#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="train_test_split.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/features/train_test_split.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="260">
+              <caret line="14" column="22" selection-start-line="14" selection-start-column="22" selection-end-line="14" selection-end-column="22" />
+              <folding>
+                <element signature="e#0#35#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>loc</find>
+      <find>make_date_ra</find>
+      <find>any</find>
+      <find>file</find>
+      <find>'F</find>
+      <find>check</find>
+      <find>start</find>
+      <find>convert</find>
+      <find>first</find>
+      <find>make_date_time_full_list</find>
+      <find>save</find>
+      <find>nan</find>
+      <find>groupby</find>
+      <find>csv</find>
+      <find>ISO</find>
+      <find>merge</find>
+      <find>isn</find>
+      <find>index</find>
+      <find>np</find>
+      <find>Filer</find>
+      <find>timedelta</find>
+      <find>make_date_range</find>
+      <find>sort</find>
+      <find>remove_</find>
+      <find>copy</find>
+      <find>readFile</find>
+      <find>extract</find>
+      <find>File</find>
+      <find>holid</find>
+      <find>missing</find>
+    </findStrings>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/data_gathering/clean_data.py" />
+        <option value="$PROJECT_DIR$/notebooks/select_feature.ipynb" />
+        <option value="$PROJECT_DIR$/features/__init__.py" />
+        <option value="$PROJECT_DIR$/evaluator.py" />
+        <option value="$PROJECT_DIR$/models/evaluator.py" />
+        <option value="$PROJECT_DIR$/models/__init__.py" />
+        <option value="$PROJECT_DIR$/utils/import_packages.py" />
+        <option value="$PROJECT_DIR$/models/DA_TAKE_xgboost.py" />
+        <option value="$PROJECT_DIR$/models/DA_TAKE.py" />
+        <option value="$PROJECT_DIR$/data_gathering/checking_data.py" />
+        <option value="$PROJECT_DIR$/data_gathering/TimeDealer.py" />
+        <option value="$PROJECT_DIR$/data_gathering/prepare_data.py" />
+        <option value="$PROJECT_DIR$/data_gathering/TimeHelper.py" />
+        <option value="$PROJECT_DIR$/data_gathering/Imputator.py" />
+        <option value="$PROJECT_DIR$/data_gathering/SelfChecking.py" />
+        <option value="$PROJECT_DIR$/data_gathering/WeatherForecastData.py" />
+        <option value="$PROJECT_DIR$/data_gathering/Filer.py" />
+        <option value="$PROJECT_DIR$/data_gathering/WeatherForecastProcessor.py" />
+        <option value="$PROJECT_DIR$/data_gathering/RawData.py" />
+        <option value="$PROJECT_DIR$/utils/hardcode_parameters.py" />
+        <option value="$PROJECT_DIR$/data_gathering/WeatherDataPreprocessing.py" />
+        <option value="$PROJECT_DIR$/data_gathering/weather-process2.py" />
+        <option value="$PROJECT_DIR$/data_gathering/weather-process1.py" />
+        <option value="$PROJECT_DIR$/data_gathering/config.py" />
+        <option value="$PROJECT_DIR$/utils/__init__.py" />
+        <option value="$PROJECT_DIR$/data_gathering/WeatherProcessor.py" />
+        <option value="$PROJECT_DIR$/data_gathering/power-data-process1.py" />
+        <option value="$PROJECT_DIR$/data_gathering/power-data-process2.py" />
+        <option value="$PROJECT_DIR$/data_gathering/power-data-process3.py" />
+        <option value="$PROJECT_DIR$/data_gathering/data-process-power3.py" />
+        <option value="$PROJECT_DIR$/data_gathering/data-process-power1.py" />
+        <option value="$PROJECT_DIR$/data_gathering/data-combine.py" />
+        <option value="$PROJECT_DIR$/data_gathering/data-process-temperature.py" />
+        <option value="$PROJECT_DIR$/data_gathering/data-process-diff.py" />
+        <option value="$PROJECT_DIR$/data_gathering/data-process-diff2.py" />
+        <option value="$PROJECT_DIR$/data_gathering/dataProcess-4-diff.py" />
+        <option value="$PROJECT_DIR$/data_gathering/dataProcess-5-merge.py" />
+        <option value="$PROJECT_DIR$/data_gathering/DataChecker.py" />
+        <option value="$PROJECT_DIR$/features/diff.py" />
+        <option value="$PROJECT_DIR$/features/features.py" />
+        <option value="$PROJECT_DIR$/models/evaluation.py" />
+        <option value="$PROJECT_DIR$/features/train_test_split.py" />
+        <option value="$PROJECT_DIR$/data_gathering/dataProcess-6-baseline.py" />
+        <option value="$PROJECT_DIR$/data_gathering/CleanData.py" />
+        <option value="$PROJECT_DIR$/models/evaluate_pnl.py" />
+        <option value="$PROJECT_DIR$/models/DIFF_model.py" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="-6" />
+    <option name="y" value="-6" />
+    <option name="width" value="864" />
+    <option name="height" value="490" />
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="Imbalance_price_forecast" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Imbalance_price_forecast" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Imbalance_price_forecast" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Imbalance_price_forecast" type="462c0819:PsiDirectoryNode" />
+              <item name="data_gathering" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Imbalance_price_forecast" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Imbalance_price_forecast" type="462c0819:PsiDirectoryNode" />
+              <item name="features" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Imbalance_price_forecast" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Imbalance_price_forecast" type="462c0819:PsiDirectoryNode" />
+              <item name="models" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Imbalance_price_forecast" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Imbalance_price_forecast" type="462c0819:PsiDirectoryNode" />
+              <item name="utils" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="Scope" />
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="SearchEverywhereHistoryKey" value="&#9;FILE&#9;file://C:/Users/Nuo.Chen/PycharmProjects/Imbalance_price_forecast/data_gathering/Configure.py&#10;split&#9;null&#9;null" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/models/evaluate_pnl.py" />
+    <property name="settings.editor.selected.configurable" value="vcs.Git" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Nuo.Chen\PycharmProjects\Imbalance_price_forecast\models" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager" selected="Python.DIFF_model">
+    <configuration name="DIFF_model" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="Imbalance_price_forecast" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/models" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/models/DIFF_model.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+    </configuration>
+    <configuration name="DataChecker" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="Imbalance_price_forecast" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/data_gathering" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/data_gathering/DataChecker.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+    </configuration>
+    <configuration name="RawData" type="PythonConfigurationType" factoryName="Python">
+      <module name="Imbalance_price_forecast" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/data_gathering" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="C:\Users\Nuo.Chen\PycharmProjects\Imbalance_price_forecast\data_gathering\dataProcess-1-power.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+    </configuration>
+    <configuration name="dataProcess-5-merge" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="Imbalance_price_forecast" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/data_gathering" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/data_gathering/dataProcess-5-merge.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+    </configuration>
+    <configuration name="dataProcess-6-baseline" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="Imbalance_price_forecast" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/data_gathering" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/data_gathering/dataProcess-6-baseline.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+    </configuration>
+    <configuration name="evaluate_pnl" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="Imbalance_price_forecast" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/models" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/models/evaluate_pnl.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+    </configuration>
+    <list>
+      <item itemvalue="Python.RawData" />
+      <item itemvalue="Python.DataChecker" />
+      <item itemvalue="Python.dataProcess-5-merge" />
+      <item itemvalue="Python.DIFF_model" />
+      <item itemvalue="Python.evaluate_pnl" />
+      <item itemvalue="Python.dataProcess-6-baseline" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.DIFF_model" />
+        <item itemvalue="Python.evaluate_pnl" />
+        <item itemvalue="Python.dataProcess-6-baseline" />
+        <item itemvalue="Python.DataChecker" />
+        <item itemvalue="Python.dataProcess-5-merge" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="dbf1f02a-d3e4-40fa-92df-0d292002c808" name="Default" comment="" />
+      <created>1528903880798</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1528903880798</updated>
+    </task>
+    <task id="LOCAL-00001" summary="Import Whole Project">
+      <created>1531133940060</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1531133940060</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
+    <servers />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="-8" y="-8" width="1296" height="1000" extended-state="6" />
+    <layout>
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.18984374" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info active="true" anchor="bottom" id="Event Log" order="10" sideWeight="0.11328125" side_tool="true" visible="true" weight="0.2764977" />
+      <window_info anchor="bottom" id="Version Control" order="9" />
+      <window_info anchor="bottom" id="Python Console" order="7" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.88671875" weight="0.2764977" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info anchor="bottom" id="Terminal" order="8" />
+      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.2327189" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32743362" />
+    </layout>
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Import Whole Project" />
+    <option name="LAST_COMMIT_MESSAGE" value="Import Whole Project" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/models/evaluate_pnl.py</url>
+          <line>30</line>
+          <option name="timeStamp" value="358" />
+        </line-breakpoint>
+      </breakpoints>
+      <default-breakpoints>
+        <breakpoint type="python-exception">
+          <properties notifyOnTerminate="true" exception="BaseException">
+            <option name="notifyOnTerminate" value="true" />
+          </properties>
+        </breakpoint>
+      </default-breakpoints>
+      <option name="time" value="361" />
+    </breakpoint-manager>
+    <watches-manager>
+      <configuration name="PythonConfigurationType">
+        <watch expression="__py_debug_temp_var_2088557834" language="Python" />
+        <watch expression="df[df['DeliveryDate'] == datetime(2017,8,23)]" language="Python" />
+        <watch expression="valCol" language="Python" />
+      </configuration>
+    </watches-manager>
+  </component>
+  <component name="debuggerHistoryManager">
+    <expressions id="evaluateCodeFragment">
+      <expression>
+        <expression-string>timeDate = [ (date+timedelta(minutes = 60/periodByHour*(pte-1)) for (date,pte) in zip(df[date_column], df[pteCol]))]</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>CODE_FRAGMENT</evaluation-mode>
+      </expression>
+    </expressions>
+    <expressions id="watch">
+      <expression>
+        <expression-string>__py_debug_temp_var_2088557834</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>solar_df.head()</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+    </expressions>
+    <expressions id="evaluateExpression">
+      <expression>
+        <expression-string>model_total_pnl</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>pnl_improvement</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>base_total_pnl</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>model_result.merge(baseline, on = df_config.date_col, how = 'inner')</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>df_config</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>df_config.pte_col</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>result['model_diff']*result['DA-Take']/1000</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>result['model_diff']*result['DA-TAKE']/1000</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>result</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+    </expressions>
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/features/features.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="765">
+          <caret line="45" lean-forward="true" selection-start-line="45" selection-end-line="45" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/data_gathering/prepare_data.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="425">
+          <caret line="25" column="4" lean-forward="true" selection-start-line="25" selection-start-column="4" selection-end-line="25" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/notebooks/select_feature.ipynb" />
+    <entry file="file://$PROJECT_DIR$/notebooks/__init__" />
+    <entry file="file://$PROJECT_DIR$/notebooks/.ipynb_checkpoints/data-explore-checkpoint.ipynb" />
+    <entry file="file://$PROJECT_DIR$/notebooks/.ipynb_checkpoints/train-test-split-checkpoint.ipynb" />
+    <entry file="file://$PROJECT_DIR$/notebooks/.ipynb_checkpoints/select-feature-checkpoint.ipynb">
+      <provider selected="true" editor-type-id="ipnb-editor">
+        <state>
+          <selected id="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/features/__init__" />
+    <entry file="file://C:/Apps/Program Files/Continuum/Anaconda3/Lib/site-packages/pandas/core/groupby/groupby.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="169">
+          <caret line="2267" selection-start-line="2267" selection-end-line="2267" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/_pydev_imps/_pydev_execfile.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="289">
+          <caret line="17" selection-start-line="17" selection-end-line="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/Apps/Program Files/Continuum/Anaconda3/Lib/site-packages/xlsxwriter/utility.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="237">
+          <caret line="624" column="17" lean-forward="true" selection-start-line="624" selection-start-column="17" selection-end-line="624" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/Apps/Program Files/Continuum/Anaconda3/Lib/site-packages/pandas/core/common.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="148">
+          <caret line="406" selection-start-line="406" selection-end-line="406" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/Apps/Program Files/Continuum/Anaconda3/Lib/site-packages/pandas/io/parsers.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="30668">
+          <caret line="1847" selection-start-line="1847" selection-end-line="1847" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/Apps/Program Files/Continuum/Anaconda3/Lib/site-packages/sklearn/model_selection/_split.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="179">
+          <caret line="725" selection-start-line="725" selection-end-line="725" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/Apps/Program Files/Continuum/Anaconda3/Lib/site-packages/sklearn/preprocessing/data.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-773">
+          <caret line="591" column="37" lean-forward="true" selection-start-line="591" selection-start-column="37" selection-end-line="591" selection-end-column="37" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/utils/import_packages.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="204">
+          <caret line="12" selection-start-line="12" selection-end-line="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/data_gathering/checking_data.py" />
+    <entry file="file://C:/Apps/Program Files/Continuum/Anaconda3/Lib/site-packages/pandas/core/indexes/base.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="115">
+          <caret line="2019" selection-start-line="2019" selection-end-line="2019" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/Apps/Program Files/Continuum/Anaconda3/Lib/site-packages/colorama/ansitowin32.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="178">
+          <caret line="36" selection-start-line="36" selection-end-line="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/utils/hardcode_parameters.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="151">
+          <caret line="25" column="15" lean-forward="true" selection-start-line="25" selection-start-column="15" selection-end-line="25" selection-end-column="15" />
+          <folding>
+            <element signature="e#0#45#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/utils/__init__.py" />
+    <entry file="file://$PROJECT_DIR$/data_gathering/TimeHelper.py" />
+    <entry file="file://$PROJECT_DIR$/data_gathering/Imputator.py" />
+    <entry file="file://$PROJECT_DIR$/data_gathering/SelfChecking.py" />
+    <entry file="file://$PROJECT_DIR$/data_gathering/Filer.py" />
+    <entry file="file://$PROJECT_DIR$/models/__init__.py" />
+    <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/pydevd.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="460">
+          <caret line="1657" selection-start-line="1657" selection-end-line="1657" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/Apps/Program Files/Continuum/Anaconda3/Lib/site-packages/pandas/core/frame.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="97">
+          <caret line="2661" selection-start-line="2661" selection-end-line="2661" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/data_gathering/data-combine.py" />
+    <entry file="file://$PROJECT_DIR$/features/__init__.py" />
+    <entry file="file://$PROJECT_DIR$/data_gathering/dataProcess-1-power.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="200">
+          <caret line="34" column="18" selection-start-line="34" selection-start-column="18" selection-end-line="34" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/data_gathering/dataProcess-3-temperature.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="205">
+          <caret line="25" column="25" lean-forward="true" selection-start-line="25" selection-start-column="25" selection-end-line="25" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/data_gathering/dataProcess-2-power.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="9" column="25" selection-start-line="9" selection-start-column="25" selection-end-line="9" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/Apps/Program Files/Continuum/Anaconda3/Lib/site-packages/pandas/io/formats/excel.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="229">
+          <caret line="654" lean-forward="true" selection-start-line="654" selection-end-line="654" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/data_gathering/DataChecker.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1700">
+          <caret line="85" column="5" lean-forward="true" selection-start-line="85" selection-start-column="5" selection-end-line="85" selection-end-column="5" />
+          <folding>
+            <element signature="e#0#35#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/data_gathering/prepare_data.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="179">
+          <caret line="80" lean-forward="true" selection-start-line="80" selection-end-line="80" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/DA_TAKE.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="160">
+          <caret line="67" column="26" lean-forward="true" selection-start-line="67" selection-start-column="26" selection-end-line="67" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/Apps/Program Files/Continuum/Anaconda3/Lib/site-packages/pandas/core/indexing.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="112">
+          <caret line="1463" selection-start-line="1463" selection-end-line="1463" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/features/features.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1780">
+          <caret line="93" column="22" selection-start-line="93" selection-start-column="22" selection-end-line="93" selection-end-column="22" />
+          <folding>
+            <element signature="e#0#35#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/features/train_test_split.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="260">
+          <caret line="14" column="22" selection-start-line="14" selection-start-column="22" selection-end-line="14" selection-end-column="22" />
+          <folding>
+            <element signature="e#0#35#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/Apps/Program Files/Continuum/Anaconda3/Lib/codecs.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="186">
+          <caret line="308" selection-start-line="308" selection-end-line="308" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/data_gathering/dataProcess-5-merge.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="380">
+          <caret line="19" selection-end-line="37" />
+          <folding>
+            <element signature="e#0#35#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/Apps/Program Files/Continuum/Anaconda3/Lib/site-packages/pandas/core/generic.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="205">
+          <caret line="4365" selection-start-line="4365" selection-end-line="4365" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/data_gathering/dataProcess-6-baseline.py" />
+    <entry file="file://$PROJECT_DIR$/data_gathering/dataProcess-4-diff.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="380">
+          <caret line="19" column="110" selection-start-line="19" selection-start-column="3" selection-end-line="19" selection-end-column="110" />
+          <folding>
+            <element signature="e#0#35#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/data_gathering/CleanData.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="20">
+          <caret line="1" column="41" selection-start-line="1" selection-start-column="41" selection-end-line="1" selection-end-column="41" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/features/diff.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="280">
+          <caret line="19" selection-start-line="19" selection-end-line="20" selection-end-column="56" />
+          <folding>
+            <element signature="e#0#35#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/evaluate_pnl.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="380">
+          <caret line="23" column="69" selection-start-line="23" selection-start-column="69" selection-end-line="23" selection-end-column="69" />
+          <folding>
+            <element signature="e#0#35#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/data_gathering/Configure.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="460">
+          <caret line="24" selection-start-line="24" selection-end-line="24" />
+          <folding>
+            <element signature="e#0#35#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/DIFF_model.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="740">
+          <caret line="44" column="35" selection-start-line="44" selection-start-column="35" selection-end-line="44" selection-end-column="35" />
+          <folding>
+            <element signature="e#0#35#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/evaluation.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="520">
+          <caret line="101" column="33" selection-start-line="101" selection-start-column="33" selection-end-line="101" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+  </component>
+  <component name="masterDetails">
+    <states>
+      <state key="ScopeChooserConfigurable.UI">
+        <settings>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+    </states>
+  </component>
+</project>
