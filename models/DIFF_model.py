@@ -45,6 +45,7 @@ if __name__ == '__main__':
     save_result_df = pd.DataFrame()
 
     df = df[df['missing_First_Forecast_Volume'] == 0]
+    df = df[]
 
     # train_df,test_df = train_test_split(df, dateCol,splitBySize = True, train_size=0.8)
 
