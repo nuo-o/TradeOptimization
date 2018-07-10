@@ -8,25 +8,35 @@ from data_gathering.Configure import Configuration
 from data_gathering.CleanData import TimeSeriesData
 
 
-def make_feat_pipeline(valCol, dateCol, lagdict, df, targetCol, standardize = True):
+def make_feat_pipeline(target, valCol, dateCol, lag_dict, df, targetCol, standardize = True):
     # extract weekday, month, dayofyear, year, isholiday
     df = make_date_feature(dateCol, df)
     df = df.drop([dateCol], axis =1)
 
     # hot-encoding categorical features
+    dummyCol = []
     for col in df.columns:
         if ('missing' in col):
             dummy = pd.get_dummies(df[col], prefix=col)
-            df = pd.concat([df.drop([col], axis = 1), dummy], axis = 1)
+            df = pd.concat([df, dummy], axis = 1)
+            dummyCol.append(col)
+
+    if len(dummyCol)>0:
+        df = df.drop(dummyCol, axis = 1)
 
     # generate lag features
     for lag_column, lag_value in lag_dict.items():
         lag_feat = make_lag_feat(lag_column, lag_value, df)
-        df = pd.concat([df, lag_feat], axis=1)
+
+        if (0 in lag_value) | (lag_column == target):
+            df = pd.concat([df, lag_feat],axis=1)
+        else:
+            df = pd.concat([df.drop([lag_column])],axis=1)
 
     # # standardize
     if standardize:
-        df = standardize_feat(df, lag_feat.columns.append(valCol))
+        num_col = list(set(valCol) - set(dummyCol)).append(lag_feat.columns)
+        df = standardize_feat(df, num_col)
 
     # drop rows that missing baseline forecast data
     y = df[targetCol]
@@ -50,7 +60,7 @@ if __name__ == '__main__':
                   'around_time_before': [96, 97, 95 * 2, 96 * 2, 97 * 2]}
     lag_dict = {target: lag_values['same_time_before']}
 
-    X,y = make_feat_pipeline(valCol.split(','), dateCol, lag_dict, df, target, standardize=False)
+    X,y = make_feat_pipeline(target, valCol.split(','), dateCol, lag_dict, df, target, standardize=False)
 
     split = train_test_split(df, dateCol,splitBySize = True, train_size=0.8)
 
@@ -69,7 +79,7 @@ if __name__ == '__main__':
     save_result_df['DeliveryDate'] = df.iloc[split:][df_config.date_col]
     save_result_df['true_diff'] = test_y
     save_result_df['predict'] = test_pred
-    pathName = param.data_folder_path + '/results/diff_MAPE/'+ str(int(metrics['MAPE']))+ '.xlsx'
+    pathName = param.data_folder_path + '/results/diff_MAE/'+ str(int(metrics['MAPE']))+ '.xlsx'
     print('feature used:')
     print(train_x.columns)
     print('save result to:{}'.format(pathName))

@@ -35,7 +35,7 @@ def cross_validation(valCol, dateCol, target, df, model, make_feat, feat_params,
         # cv_test = df.iloc[test_index, :]
 
         # feat_params['df'] = cv_train
-        X,y = make_feat(valCol, dateCol, feat_params, df, target, standardize = stand)
+        X,y = make_feat(target, valCol, dateCol, feat_params, df, target, standardize = stand)
         train_x = X.iloc[train_index]
         test_x = X.iloc[test_index]
         train_y = y[train_index]
@@ -46,17 +46,18 @@ def cross_validation(valCol, dateCol, target, df, model, make_feat, feat_params,
 
         cv_model = model()
         cv_model.fit(train_x, train_y)
-        #             train_pred = cv_model.predict_proba(train_x)[:, 1]
-        #             test_pred = cv_model.predict_proba(test_x)[:, 1]
-        train_pred = cv_model.predict(train_x)
-        test_pred = cv_model.predict(test_x)
 
         if classification:
+            train_pred = cv_model.predict_proba(train_x)[:, 1]
+            test_pred = cv_model.predict_proba(test_x)[:, 1]
             train_metrics = Evaluator(train_pred, train_y).classification_metrics()
             test_metrics = Evaluator(test_pred, test_y).classification_metrics()
             results['auc'].append(test_metrics['AUC'])
+            results['acc'].append(test_metrics['Accuracy'])
             results['models'].append(cv_model)
         else:
+            train_pred = cv_model.predict(train_x)
+            test_pred = cv_model.predict(test_x)
             train_metrics = Evaluator(train_pred, train_y).regression_metrics()
             test_metrics = Evaluator(test_pred, test_y).regression_metrics()
             results['test_WMAPE'].append(test_metrics['WMAPE'])
@@ -102,10 +103,12 @@ class Evaluator():
     def regression_metrics(self):
         error = self.true-self.pred
         relative_error = error / self.true
+        mae = round(np.sum(abs(relative_error)),4)
         mpe = round(100*np.sum(relative_error)/len(self.pred),4)
         mape = round(100*np.sum(abs(relative_error))/len(self.pred),4)
         wmape = round(100*np.sum(abs(error))/np.sum(abs(self.true))/len(self.pred),4)
         metrics = {}
+        metrics['MAE'] = mae
         metrics['MPE'] = mpe
         metrics['MAPE'] = mape
         metrics['WMAPE'] = wmape
