@@ -3,7 +3,6 @@ from sklearn.metrics import roc_curve, auc
 from collections import defaultdict
 from sklearn.model_selection import TimeSeriesSplit
 
-
 def plot_predictions(pred, true_v):
     results = pd.DataFrame()
     results.loc[:, 'true_values'] = true_v
@@ -31,17 +30,10 @@ def cross_validation(valCol, dateCol, target, df, model, make_feat, feat_params,
     for fold, (train_index, test_index) in enumerate(ts_split.split(df), 1):
         start_time = time.time()
         print('Fold:{}'.format(fold))
-        # cv_train = df.iloc[train_index, :]
-        # cv_test = df.iloc[test_index, :]
 
-        # feat_params['df'] = cv_train
         X,y = make_feat(target, valCol, dateCol, feat_params, df, target, standardize = stand)
-        train_x = X.iloc[train_index]
-        test_x = X.iloc[test_index]
-        train_y = y[train_index]
-        test_y = y[test_index]
-        # train_x, train_y = make_feat(valCol,dateCol, feat_params, cv_train, target, standardize = stand)
-        # test_x, test_y = make_feat(valCol, dateCol, feat_params, cv_test, target, standardize = stand)
+        train_x,test_x = X.iloc[train_index], X.iloc[test_index]
+        train_y,test_y = y[train_index],y[test_index]
         feat_cols = train_x.columns
 
         cv_model = model()

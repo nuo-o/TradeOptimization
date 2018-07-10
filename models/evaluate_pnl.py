@@ -18,7 +18,7 @@ if __name__ == '__main__':
 
     # compute model pnl
     result = model_result.merge(baseline, on = df_config.date_col, how = 'inner')
-    result['bidVolume'] = result['First_Forecast_Volume'] + result['predict']*const
+    result['bidVolume'] = result['First_Forecast_Volume'] + result['predict_diff']*const
     result['model_diff'] = result['bidVolume'] - result['ActualVolumes']
     result['base_diff-model_diff'] = abs(result['true_diff']) - abs(result['model_diff'])
     result['DA-Take'] = result['DayAheadPrice'] - result['Take_From']

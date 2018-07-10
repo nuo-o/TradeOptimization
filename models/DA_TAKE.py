@@ -1,13 +1,8 @@
 from utils.import_packages import *
-from xgboost import XGBClassifier, XGBRegressor
 import utils.hardcode_parameters as param
-from features.features import make_date_feature, make_lag_feat, standardize_feat, plot_feature_importance
-from models.evaluation import cross_validation, Evaluator, save_result_to_file
-from sklearn.preprocessing import StandardScaler
-from data_gathering.Configure import Configuration
-from models.DIFF_model import make_feat_pipeline
-from data_gathering.CleanData import TimeSeriesData
-
+from features.features import plot_feature_importance
+from models.CrossValidate import cross_validation, Evaluator, save_result_to_file
+from features.make_feature import make_feat_pipeline
 
 if __name__ == '__main__':
     train_df, train_config = Configuration().readFile('train_imb_no_demand')
@@ -21,7 +16,7 @@ if __name__ == '__main__':
     a = len(pos_train) / len(train_df) * 100
     print('pos class proportion:{}'.format(a))
 
-    lag_dict = {'DA>TAKE': [96,96*2,96*3]}
+    lag_dict = {target: [96,96*2,96*3]}
 
     out, feat_cols = cross_validation(train_config.forecast_v, train_config.date_col,target, \
                                       train_df, XGBClassifier, make_feat_pipeline, lag_dict, stand=False)
@@ -30,8 +25,6 @@ if __name__ == '__main__':
     cv_acc = sum([float(acc) for acc in out['acc']])/len(out['acc'])
     print('cross validation:\nauc = {}\nacc = {}\n'.format(cv_auc, cv_acc))
 
-    # model_auc = out['auc']
-    # best_model = out['models'][model_auc.index(max(model_auc))]
     best_model = out['models'][len(out)-1]
 
     feat_imp = plot_feature_importance(best_model, feat_cols)[-10:]
@@ -45,5 +38,5 @@ if __name__ == '__main__':
     metrics = Evaluator(test_pred, test_y).classification_metrics()
 
     # saving results
-    save_result_to_file(param.data_folder_path + '/results/DA_TAKE_auc/', metrics['Accuracy'], lag_dict)
+    save_result_to_file(param.data_folder_path + '/results/DA_TAKE_auc_', metrics['Accuracy'], lag_dict)
     print(metrics)
