@@ -1,8 +1,5 @@
 from utils.import_packages import *
 import utils.hardcode_parameters as param
-from data_gathering.CleanData import TimeSeriesData
-from data_gathering.Configure import Configuration
-from data_gathering.DataChecker import DataChecker
 
 if __name__ == '__main__':
     """Generate training data for diff prediction. 

@@ -1,4 +1,5 @@
 from utils.import_packages import *
+import utils.hardcode_parameters as param
 
 from data_gathering.Configure import Configuration
 
@@ -74,14 +75,20 @@ class DataChecker():
 
 if __name__ == '__main__':
 
-    file = 'final-diff'
+    file = 'final-take'
     print('check file:{}...'.format(file))
     df, config = Configuration().readFile(file)
+
+    # if no realtime column, first convert
+    # ts =TimeSeriesData(df, config.date_col, config.forecast_v, pteCol = config.pte_col)
+    # df = ts.file
+    # else
     df[config.date_col] = pd.to_datetime(df[config.date_col])
 
     checker = DataChecker(df)
     a = checker.check_missing_dates(config.date_col)
     checker.check_duplicate_forecast([config.date_col])
+
     # forecast_v = config.forecast_v.split(',')
     #
     # for col in forecast_v:

@@ -19,3 +19,4 @@ missing_data_to = datetime(2017, 12, 26)
 
 fileConfigPath = data_folder_path + '/fileConfig.xlsx'
 hold_out_date_begin = datetime(2018,3,27)
+hold_out_date_end = datetime(2018,6,27)

@@ -25,7 +25,7 @@ def make_feat_pipeline(target, valCol, dateCol, lag_dict, df, targetCol, standar
         if (0 in lag_value) | (lag_column == target):
             df = pd.concat([df, lag_feat],axis=1)
         else:
-            df = pd.concat([df.drop([lag_column])],axis=1)
+            df = pd.concat([df.drop([lag_column], axis = 1)],axis=1)
 
     # # standardize
     if standardize:

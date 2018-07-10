@@ -1,6 +1,5 @@
 from utils.import_packages import *
 import utils.hardcode_parameters as param
-from features.features import train_test_split
 from models.CrossValidate import cross_validation, Evaluator
 from data_gathering.Configure import Configuration
 from data_gathering.CleanData import TimeSeriesData
