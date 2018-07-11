@@ -7,6 +7,14 @@ from features.make_feature import make_feat_pipeline
 
 
 if __name__ == '__main__':
+    # model = XGBRegressor(base_score=0.5, booster='gbtree', colsample_bylevel=1,
+    #    colsample_bytree=0.5, gamma=0, learning_rate=0.05, max_delta_step=0,
+    #    max_depth=3, min_child_weight=1.0, missing=math.nan, n_estimators=2500,
+    #    n_jobs=1, nthread=None, objective='reg:linear', random_state=1234,
+    #    reg_alpha=0, reg_lambda=1, scale_pos_weight=1, seed=None,
+    #    silent=True, smooth_interval=200, subsample=1)
+    model = XGBRegressor(learning_rate=0.005)
+    # model = XGBRegressor()
     df, df_config = Configuration().readFile('final-diff')
     dateCol,valCol = df_config.date_col, df_config.forecast_v
     target = 'Diff'
@@ -27,7 +35,7 @@ if __name__ == '__main__':
     print('train:valid:test = {}:{}:{}'.format(\
         round( len(train_x)/len(df), 2),round( len(valid_x)/len(df), 2),round( len(hold_df)/len(df), 2)))
 
-    model = XGBRegressor().fit(train_x,train_y)
+    model = model.fit(train_x,train_y)
     train_pred = model.predict(train_x)
     valid_pred = model.predict(valid_x)
     train_metrics = Evaluator(train_pred, train_y).regression_metrics()
@@ -49,7 +57,7 @@ if __name__ == '__main__':
     hold_prediction['DeliveryDate'] = df.iloc[hold_split_index:][df_config.date_col]
     hold_prediction['true_diff'] = y
     hold_prediction['predict_diff'] = prediction
-    prediction_path = param.data_folder_path + '/results/hold-out-prediction/diff.xlsx'
+    prediction_path = param.data_folder_path + '/results/hold-out-prediction/diff_MAE_' + str(int(hold_metrics['MAE']))+ '.xlsx'
     hold_prediction.to_excel(prediction_path, index=False)
     print('save hold-out prediction to {}'.format(prediction_path))
 
@@ -67,6 +75,8 @@ if __name__ == '__main__':
         f.write(str(valid_metrics))
         f.write('\nTest Metrics\n')
         f.write(str(hold_metrics))
+        f.write('\nModel:\n')
+        f.write(str(model))
 
     print('\nfeature used:')
     print(X.columns)
