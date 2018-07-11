@@ -46,24 +46,31 @@ if __name__ == '__main__':
     result = baseline.merge(diff_pred, left_on = baseline_config.date_col, right_on = diff_config.date_col, how = 'inner')
     result = result.merge(take_pred, left_on = baseline_config.date_col, right_on = take_config.date_col, how = 'inner')
 
-    forecast_v = result['First_Forecast_Volume']
-    predict_diff = result['predict_diff']
-    actual = result['ActualVolumes']
-    predict_da_take = result['predict_DA>TAKE']
-    da_take_price = (result['DayAheadPrice'] - result['Take_From'])/1000
+    evaluate_split_index = train_test_split(result, baseline_config.date_col, splitBySize=False, split_date=datetime(2018,5,27))
+    evaluate_result = result[:evaluate_split_index]
+    test_result = result[evaluate_split_index:]
+
+    # evaluate the best strategy
+    print('Evaluation:')
+    forecast_v = evaluate_result['First_Forecast_Volume']
+    predict_diff = evaluate_result['predict_diff']
+    actual = evaluate_result['ActualVolumes']
+    predict_da_take = evaluate_result['predict_DA>TAKE']
+    da_take_price = (evaluate_result['DayAheadPrice'] - evaluate_result['Take_From'])/1000
 
     da_threshold = 0.5
     da_pos_c = np.array([0,1,-1])*1000
     da_neg_c = np.array([0,1,-1])*1000
 
     # baseline
-    base_avgAbsDiff = sum(abs(result['true_diff'])) / len(result) * 100
-    base_pnl = result['TotalPnL']
-    base_totalPnl = sum(result['TotalPnL'])
-    print('baseline:\nAvg_Abs_Diff= {}, total_pnl= {}'.format(round(base_avgAbsDiff, 2), round(base_totalPnl, 2)))
+    base_avgAbsDiff = sum(abs(evaluate_result['true_diff'])) / len(evaluate_result) * 100
+    base_pnl = evaluate_result['TotalPnL']
+    base_totalPnl = sum(evaluate_result['TotalPnL'])
+    # print('baseline:\nAvg_Abs_Diff= {}, total_pnl= {}'.format(round(base_avgAbsDiff, 2), round(base_totalPnl, 2)))
 
     best_strategy = []
     best_pnl = base_totalPnl
+    best_bid = []
 
     for pos_c in da_pos_c:
         for neg_c in da_neg_c:
@@ -79,11 +86,31 @@ if __name__ == '__main__':
                 best_pnl = total_pnl
                 best_pos_c = pos_c
                 best_neg_c = neg_c
+                best_bid = bid
 
-    print('\nBest Strategy:\npos = {}, neg = {}'.format(pos_c, neg_c))
+    print('\nBest Strategy:\npos = {}, neg = {}'.format(best_pos_c, best_neg_c))
     print('Best total pnl = {}'.format(best_pnl))
     print('Best total pnl improvement = {}'.format(best_pnl - base_totalPnl))
 
-    currentBest = 5146
-    if round(best_pnl - base_totalPnl,0) > currentBest:
-        print('new best result')
+    # Test baseline
+    print('\nTest')
+    base_avgAbsDiff = sum(abs(test_result['true_diff'])) / len(test_result) * 100
+    base_pnl = test_result['TotalPnL']
+    base_totalPnl = sum(test_result['TotalPnL'])
+    print('Baseline total Pnl = {}'.format(base_totalPnl))
+
+    forecast_v = test_result['First_Forecast_Volume']
+    predict_diff = test_result['predict_diff']
+    actual = test_result['ActualVolumes']
+    predict_da_take = test_result['predict_DA>TAKE']
+    da_take_price = (test_result['DayAheadPrice'] - test_result['Take_From'])/1000
+
+    bid = bid_strategy(predict_da_take, predict_diff, forecast_v, best_pos_c, best_neg_c, da_threshold)
+    pnl, total_pnl, avgAbsDiff = evaluate_strategy(bid, da_take_price, actual, printInfo=True)
+    print('TestPnl - BasePnl = {}'.format(total_pnl - base_totalPnl))
+    print('BaseAvgAbsDiff - OurAvgAbsDiff = {}'.format(avgAbsDiff - base_avgAbsDiff))
+
+    # # save best bid
+    # currentBest = 5146
+    # if round(best_pnl - base_totalPnl,0) > currentBest:
+    #     print('new best result')
