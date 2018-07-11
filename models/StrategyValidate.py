@@ -4,6 +4,7 @@ from data_gathering.CleanData import TimeSeriesData
 from data_gathering.Configure import Configuration
 from data_gathering.CleanData import convert2RealTime
 
+
 def evaluate_strategy(bid, da_take_price, actual, printInfo):
     model_diff = bid - actual
     avgAbsDiff = sum(abs(model_diff))/len(model_diff)
@@ -14,14 +15,14 @@ def evaluate_strategy(bid, da_take_price, actual, printInfo):
     return pnl, total_pnl, avgAbsDiff
 
 
-def bid_strategy( predict_da_take, predict_diff, forecast_v, da_take_pos_c, da_take_neg_c, da_threshold, max_bid = 30000, min_bid = -30000):
+def bid_strategy( predict_da_take, predict_diff, forecast_v, da_take_pos_c, da_take_neg_c, da_threshold, max_bid = 30000, min_bid = 1000):
     bid = []
     for (da_take, diff, forecast_v) in zip( predict_da_take, predict_diff, forecast_v):
         if da_take>da_threshold:
             new_bid = forecast_v + diff*da_take_pos_c
             new_bid = max(min(new_bid, max_bid), min_bid)
         else:
-            new_bid = forecast_v + diff*da_take_pos_c
+            new_bid = forecast_v + diff*da_take_neg_c
             new_bid = max(min(new_bid, max_bid), min_bid)
         bid.append(new_bid)
     return bid
@@ -56,9 +57,10 @@ if __name__ == '__main__':
     predict_diff = evaluate_result['predict_diff']
     actual = evaluate_result['ActualVolumes']
     predict_da_take = evaluate_result['predict_DA>TAKE']
+
     da_take_price = (evaluate_result['DayAheadPrice'] - evaluate_result['Take_From'])/1000
 
-    da_threshold = 0.5
+    da_threshold = 0.51
     da_pos_c = np.array([0,1,-1])*1000
     da_neg_c = np.array([0,1,-1])*1000
 
@@ -87,7 +89,7 @@ if __name__ == '__main__':
                 best_pnl = total_pnl
                 best_pos_c = pos_c
                 best_neg_c = neg_c
-                best_bid = bid
+                # best_bid = bid
 
     if (best_pos_c == 0) & (best_neg_c == 0):
         raise ValueError('No improvement against the baseline.')
@@ -114,7 +116,14 @@ if __name__ == '__main__':
     print('TestPnl - BasePnl = {}'.format(total_pnl - base_totalPnl))
     print('BaseAvgAbsDiff - OurAvgAbsDiff = {}'.format(avgAbsDiff - base_avgAbsDiff))
 
-    # # save best bid
+    # save test result
+    save_result = test_result[['DeliveryDate','First_Forecast_Volume', 'ActualVolumes','Take_From', 'DayAheadPrice', 'Diff', 'TotalPnL']]
+    save_result['Model_bid'] = bid
+    save_path = param.data_folder_path + '/results/test_bid_pnl_' + str(int(total_pnl)) + '.xlsx'
+    save_result.to_excel( save_path, index = False)
+    print('save test bid into {}'.format(save_path))
+
+
     # currentBest = 5146
     # if round(best_pnl - base_totalPnl,0) > currentBest:
     #     print('new best result')
