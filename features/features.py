@@ -121,6 +121,7 @@ def standardize_feat(df, on_cols):
 
 
 def train_test_split(df, dateCol, splitBySize, train_size=0.7, split_date = None):
+    df = df.sort_values([dateCol], ascending=[True]).reset_index(drop = True)
     if splitBySize:
         used = set()
         unique_days = [day for day in df[dateCol] if day not in used and (used.add(day) or True)]

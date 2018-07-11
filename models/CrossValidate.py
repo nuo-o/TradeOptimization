@@ -36,7 +36,7 @@ def cross_validation(valCol, dateCol, target, df, model, make_feat, feat_params,
         train_y,test_y = y[train_index],y[test_index]
         feat_cols = train_x.columns
 
-        cv_model = model()
+        cv_model = model
         cv_model.fit(train_x, train_y)
 
         if classification:

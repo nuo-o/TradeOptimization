@@ -5,6 +5,7 @@ from models.CrossValidate import cross_validation, Evaluator, save_result_to_fil
 from features.make_feature import make_feat_pipeline
 
 if __name__ == '__main__':
+    model = XGBClassifier(learning_rate=0.001)
     df, df_config = Configuration().readFile('final-take')
     date_col = df_config.date_col
     val_col = df_config.forecast_v
@@ -37,14 +38,13 @@ if __name__ == '__main__':
 
     # cross validation
     out, feat_cols = cross_validation(val_col, date_col,target, \
-                                      train_df, XGBClassifier, make_feat_pipeline, lag_dict, stand=False)
+                                      train_df, model, make_feat_pipeline, lag_dict, stand=False)
 
     cv_auc = sum([float(auc) for auc in out['auc']])/len(out['auc'])
     cv_acc = sum([float(acc) for acc in out['acc']])/len(out['acc'])
     print('cross validation:\nauc = {}\nacc = {}\n'.format(cv_auc, cv_acc))
 
     # feature importance
-    model = out['models'][len(out)-1]
     feat_imp = plot_feature_importance(model, feat_cols)[-10:]
     print(feat_imp)
 
@@ -61,13 +61,13 @@ if __name__ == '__main__':
     hold_prediction['DeliveryDate'] = df.iloc[hold_split_index:][df_config.date_col]
     hold_prediction['true_DA>TAKE'] = y
     hold_prediction['predict_DA>TAKE'] = prediction_proba
-    prediction_path = param.data_folder_path + '/results/hold-out-prediction/DA_TAKE.xlsx'
+    prediction_path = param.data_folder_path + '/results/hold-out-prediction/TAKE_AUC_' + str((hold_metrics['AUC'])) + '.xlsx'
     hold_prediction.to_excel(prediction_path, index=False)
     print('save hold-out prediction to {}'.format(prediction_path))
     # test_pred = best_model2.predict_proba(test_x)[:, 1]
 
     # save train result to txt file
-    save_result_path = param.data_folder_path + '/results/train_results/TAKE_Acc_'+str(int(hold_metrics['Accuracy'])) + '.txt'
+    save_result_path = param.data_folder_path + '/results/train_results/TAKE_AUC_'+str((hold_metrics['AUC'])) + '.txt'
     with open(save_result_path, 'w') as f:
         f.write('train:valid:test = {}:{}:{}\n'.format( \
             round(len(train_x) / len(df), 2), round(len(valid_x) / len(df), 2), round(len(hold_df) / len(df), 2)))
@@ -80,5 +80,7 @@ if __name__ == '__main__':
         f.write('\nTest Score:\n')
         f.write('auc = {}\n'.format(hold_metrics['AUC']))
         f.write('acc = {}\n'.format(hold_metrics['Accuracy']))
+        f.write('\nmodel:\n')
+        f.write(str(model))
 
     print('all done')
