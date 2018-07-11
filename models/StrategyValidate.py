@@ -68,7 +68,8 @@ if __name__ == '__main__':
     base_totalPnl = sum(evaluate_result['TotalPnL'])
     # print('baseline:\nAvg_Abs_Diff= {}, total_pnl= {}'.format(round(base_avgAbsDiff, 2), round(base_totalPnl, 2)))
 
-    best_strategy = []
+    best_pos_c = 0
+    best_neg_c = 0
     best_pnl = base_totalPnl
     best_bid = []
 
@@ -87,6 +88,9 @@ if __name__ == '__main__':
                 best_pos_c = pos_c
                 best_neg_c = neg_c
                 best_bid = bid
+
+    if (best_pos_c == 0) & (best_neg_c == 0):
+        raise ValueError('No improvement against the baseline.')
 
     print('\nBest Strategy:\npos = {}, neg = {}'.format(best_pos_c, best_neg_c))
     print('Best total pnl = {}'.format(best_pnl))
