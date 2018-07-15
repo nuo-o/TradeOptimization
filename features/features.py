@@ -63,7 +63,7 @@ def make_lag_feat(lag_target_name, lags, df):
 
     lagged.columns = rename_columns
 
-    return lagged
+    return lagged, rename_columns
 
 
 def single_ax_plot(df, x, y, figsize = (10,10), **kwargs):

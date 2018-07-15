@@ -14,29 +14,32 @@ def plot_predictions(pred, true_v):
 
     return f
 
+#
+# def save_result_to_file(file_path, result, feat_dict, notes = None):
+#     with open(file_path + str(result) + str(notes)+'.txt', 'w') as f:
+#         for lag_column, lag_value in feat_dict.items():
+#             row = str(lag_column) + ':' + str(lag_value)
+#             f.write('%s\n' % row)
 
-def save_result_to_file(file_path, result, feat_dict, notes = None):
-    with open(file_path + str(result) + str(notes)+'.txt', 'w') as f:
-        for lag_column, lag_value in feat_dict.items():
-            row = str(lag_column) + ':' + str(lag_value)
-            f.write('%s\n' % row)
 
-
-def cross_validation(valCol, dateCol, target, df, model, make_feat, feat_params, n_folds=5, classification = True, print_temp_info=True, stand = True):
+def cross_validation(X, y, cv_model, n_folds=5, classification = True, print_temp_info=True):
     results = defaultdict(list)
     ts_split = TimeSeriesSplit(n_splits=n_folds)
     feat_cols = None
 
-    for fold, (train_index, test_index) in enumerate(ts_split.split(df), 1):
+    for fold, (train_index, test_index) in enumerate(ts_split.split(X), 1):
         start_time = time.time()
         print('Fold:{}'.format(fold))
 
-        X,y = make_feat(target, valCol, dateCol, feat_params, df, target, standardize = stand)
-        train_x,test_x = X.iloc[train_index], X.iloc[test_index]
-        train_y,test_y = y[train_index],y[test_index]
+        # train_x,test_x = X.iloc[train_index], X.iloc[test_index]
+        # train_y,test_y = y[train_index],y[test_index]
+        train_x = X.iloc[:test_index[0]]
+        train_y = y[:test_index[0]]
+        test_x = X.iloc[test_index[0]:test_index[-1]]
+        test_y = y[test_index[0]:test_index[-1]]
+
         feat_cols = train_x.columns
 
-        cv_model = model
         cv_model.fit(train_x, train_y)
 
         if classification:
@@ -52,7 +55,7 @@ def cross_validation(valCol, dateCol, target, df, model, make_feat, feat_params,
             test_pred = cv_model.predict(test_x)
             train_metrics = Evaluator(train_pred, train_y).regression_metrics()
             test_metrics = Evaluator(test_pred, test_y).regression_metrics()
-            results['test_WMAPE'].append(test_metrics['WMAPE'])
+            results['test_WMAPE(%)'].append(test_metrics['WMAPE(%)'])
             results['models'].append(cv_model)
 
         if print_temp_info:
@@ -101,9 +104,9 @@ class Evaluator():
         wmape = round(100*np.sum(abs(error))/np.sum(abs(self.true))/len(self.pred),4)
         metrics = {}
         metrics['MAE'] = mae
-        metrics['MPE'] = mpe
-        metrics['MAPE'] = mape
-        metrics['WMAPE'] = wmape
+        metrics['MPE(%)'] = mpe
+        metrics['MAPE(%)'] = mape
+        metrics['WMAPE(%)'] = wmape
 
         return metrics
 
