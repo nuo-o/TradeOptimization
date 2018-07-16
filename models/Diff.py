@@ -7,11 +7,13 @@ from features.make_feature import make_feat_pipeline
 from features.features import plot_feature_importance
 from collections import defaultdict
 from sklearn.model_selection import TimeSeriesSplit
-
+from sklearn.linear_model import LogisticRegression
 
 
 if __name__ == '__main__':
-    model = XGBRegressor(learning_rate=0.005)
+    # model = XGBRegressor(learning_rate=0.005)
+    model = LogisticRegression()
+    model_name = 'LR'
     df, df_config = Configuration().readFile('final-diff')
     date_col,val_col = df_config.date_col, df_config.forecast_v
     target = 'Diff'
@@ -25,18 +27,25 @@ if __name__ == '__main__':
     train_df, hold_df = df[:hold_split_index], df[hold_split_index:]
     lag_dict = {target: [96, 96*2, 96*3]}
     X, Y = make_feat_pipeline(target, val_col, date_col, lag_dict, df, target, standardize=False)
-    train_x, hold_x = X[:hold_split_index], X[hold_split_index:]
-    train_y, hold_y = Y[:hold_split_index], Y[hold_split_index:]
 
     # cross-validate
+    if model_name == 'LR':
+        Y = [int(y) for y in Y]
+        train_x, hold_x = X[:hold_split_index], X[hold_split_index:]
+        train_y, hold_y = Y[:hold_split_index], Y[hold_split_index:]
+    else:
+        train_x, hold_x = X[:hold_split_index], X[hold_split_index:]
+        train_y, hold_y = Y[:hold_split_index], Y[hold_split_index:]
+
     out, feat_cols = cross_validation(train_x,train_y, model, classification=False)
 
     cv_score = max(out['test_WMAPE(%)'])
     model = out['models'][out['test_WMAPE(%)'].index(cv_score)]
 
     # feature importance
-    feat_imp = plot_feature_importance(model, feat_cols)[-10:]
-    print(feat_imp)
+    if model_name == 'XGB':
+        feat_imp = plot_feature_importance(model, feat_cols)[-10:]
+        print(feat_imp)
 
     # hold-out test
     print('hold-out:')
@@ -72,9 +81,10 @@ if __name__ == '__main__':
         for feat in X.columns:
             f.write('{}\n'.format(feat))
 
-        f.write('\ntop 10 important features:\n')
-        for imp, feat in zip(feat_imp['importances'], feat_imp['features']):
-            f.write('feat_{}:\t{}\n'.format(feat, imp))
+        if model_name == 'XGB':
+            f.write('\ntop 10 important features:\n')
+            for imp, feat in zip(feat_imp['importances'], feat_imp['features']):
+                f.write('feat_{}:\t{}\n'.format(feat, imp))
 
     # lag_dict = {target: [96, 96*2, 96*3]}
     # X,y = make_feat_pipeline(target, valCol.split(','), dateCol, lag_dict, train_df, target, standardize=False)

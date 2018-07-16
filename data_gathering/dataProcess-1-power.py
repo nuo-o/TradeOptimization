@@ -56,15 +56,15 @@ if __name__ == '__main__':
     savePath = param.data_folder_path + saveSubPath
     wf.to_excel(savePath, index=False)
 
-    # update config file
-    if len(configuration.configFile[ configuration.configFile.data_short_name == save_name]) > 0:
-        print('\nWarning: Existing data short name. Configuration file not updated!!!!!!!!!!\n')
-    else:
-        forecast_v = ','.join([save_val_name, save_max_name, save_min_name])
-        new_config = pd.DataFrame({'data_short_name': [save_name], 'data_path': [saveSubPath],\
-                                   'sheet_name': ['Sheet1'], 'date_col': [dateCol], 'forecast_v': forecast_v})
-        file_config = pd.concat([configuration.configFile, new_config], axis=0)
-        file_config.to_excel(param.fileConfigPath, index=False)
-
-    # one data file
-    print('good')
+    # # update config file
+    # if len(configuration.configFile[ configuration.configFile.data_short_name == save_name]) > 0:
+    #     print('\nWarning: Existing data short name. Configuration file not updated!!!!!!!!!!\n')
+    # else:
+    #     forecast_v = ','.join([save_val_name, save_max_name, save_min_name])
+    #     new_config = pd.DataFrame({'data_short_name': [save_name], 'data_path': [saveSubPath],\
+    #                                'sheet_name': ['Sheet1'], 'date_col': [dateCol], 'forecast_v': forecast_v})
+    #     file_config = pd.concat([configuration.configFile, new_config], axis=0)
+    #     file_config.to_excel(param.fileConfigPath, index=False)
+    #
+    # # one data file
+    # print('good')

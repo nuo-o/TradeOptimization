@@ -17,6 +17,8 @@ if __name__ == '__main__':
     temp_df, temp_config = configuration.readFile('avg-temperature')
     da_df, da_config = configuration.readFile('DA')
     da_df = TimeSeriesData(da_df, da_config.date_col, da_config.forecast_v, pteCol=da_config.pte_col).file
+    plant_df, plant_config = configuration.readFile('clean-plant')
+
 
     df1 = da_df.merge(solar_df, left_on = da_config.date_col, right_on=solar_config.date_col, how = 'left')
     df2 = df1.merge(wind_df, left_on = da_config.date_col, right_on=wind_config.date_col, how = 'left')

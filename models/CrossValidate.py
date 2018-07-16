@@ -2,6 +2,7 @@ from utils.import_packages import *
 from sklearn.metrics import roc_curve, auc
 from collections import defaultdict
 from sklearn.model_selection import TimeSeriesSplit
+from sklearn.metrics import precision_score
 
 def plot_predictions(pred, true_v):
     results = pd.DataFrame()
@@ -43,12 +44,15 @@ def cross_validation(X, y, cv_model, n_folds=5, classification = True, print_tem
         cv_model.fit(train_x, train_y)
 
         if classification:
-            train_pred = cv_model.predict_proba(train_x)[:, 1]
-            test_pred = cv_model.predict_proba(test_x)[:, 1]
+            # train_pred_prob = cv_model.predict_proba(train_x)[:, 1]
+            # test_pred_prob = cv_model.predict_proba(test_x)[:, 1]
+            train_pred = cv_model.predict(train_x)
+            test_pred = cv_model.predict(test_x)
             train_metrics = Evaluator(train_pred, train_y).classification_metrics()
             test_metrics = Evaluator(test_pred, test_y).classification_metrics()
             results['auc'].append(test_metrics['AUC'])
             results['acc'].append(test_metrics['Accuracy'])
+            results['precision'].append((test_metrics['Precision']))
             results['models'].append(cv_model)
         else:
             train_pred = cv_model.predict(train_x)
@@ -70,8 +74,8 @@ def cross_validation(X, y, cv_model, n_folds=5, classification = True, print_tem
 
 class Evaluator():
     def __init__(self, prediction, true_values):
-        self.pred = prediction
-        self.true = true_values
+        self.pred = np.array(prediction)
+        self.true = np.array(true_values)
 
     def mean_percentage_error(self):
         pe = (self.pred - self.true)/ self.true
@@ -118,4 +122,5 @@ class Evaluator():
         metrics = {}
         metrics['AUC'] = AUC
         metrics['Accuracy'] = accuracy
+        metrics['Precision'] = round(precision_score(self.true, self.pred),2)
         return metrics

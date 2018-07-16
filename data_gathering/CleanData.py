@@ -10,6 +10,12 @@ def convert2RealTime(dateVals, pteVals):
         timeDate.append( date+timedelta(minutes=15*(pte-1)))
     return timeDate
 
+def convert_PTE_2_rt(df_date, df_pte, periodByHour = 4):
+    timeDate = []
+    for (date, pte) in zip(df_date, df_pte):
+        timeDate.append(date + timedelta(minutes=60 / periodByHour * (pte - 1)))
+    return timeDate
+
 
 class TimeSeriesData():
     def __init__(self, df, date_column, val_column, created_time_column=None, periodByHour = 4, pteCol = None, convertTime = True):
@@ -20,10 +26,7 @@ class TimeSeriesData():
 
         if (pteCol != None) :
             if convertTime:
-                timeDate = []
-                for (date, pte) in zip(df[date_column], df[pteCol]):
-                    timeDate.append( date+timedelta(minutes=60/periodByHour*(pte-1)))
-                df[date_column] = timeDate
+                df[date_column] = convert_PTE_2_rt(df[date_column], df[pteCol])
             selected_feat.append(pteCol)
             self.pteCol = pteCol
 

@@ -15,7 +15,7 @@ def evaluate_strategy(bid, da_take_price, actual, printInfo):
     return pnl, total_pnl, avgAbsDiff
 
 
-def bid_strategy( predict_da_take, predict_diff, forecast_v, da_take_pos_c, da_take_neg_c, da_threshold, max_bid = 30000, min_bid = 1000):
+def bid_strategy( predict_da_take, predict_diff, forecast_v, da_take_pos_c, da_take_neg_c, da_threshold, max_bid = 30000, min_bid = 0):
     bid = []
     for (da_take, diff, forecast_v) in zip( predict_da_take, predict_diff, forecast_v):
         if da_take>da_threshold:
@@ -35,9 +35,11 @@ if __name__ == '__main__':
     configuration = Configuration()
     baseline, baseline_config = configuration.readFile('baseline')
     baseline[baseline_config.date_col] = convert2RealTime(baseline[baseline_config.date_col], baseline[baseline_config.pte_col])
+    # baseline.to_excel(param.data_folder_path + '/graph/baseline.xlsx', index = False)
 
     diff_pred, diff_config = configuration.readFile('best-diff')
     take_pred, take_config = configuration.readFile('best-TAKE')
+
 
     trend = [1 if a*b>0 else 0 for (a,b) in zip(diff_pred['true_diff'], diff_pred['predict_diff'])]
     trend_acc = sum(trend)*100/len(trend)
@@ -119,9 +121,11 @@ if __name__ == '__main__':
     # save test result
     save_result = test_result[['DeliveryDate','First_Forecast_Volume', 'ActualVolumes','Take_From', 'DayAheadPrice', 'Diff', 'TotalPnL']]
     save_result['Model_bid'] = bid
+    save_result['Model_pnl'] = pnl
     save_path = param.data_folder_path + '/results/test_bid_pnl_' + str(int(total_pnl)) + '.xlsx'
     save_result.to_excel( save_path, index = False)
     print('save test bid into {}'.format(save_path))
+
 
 
     # currentBest = 5146
