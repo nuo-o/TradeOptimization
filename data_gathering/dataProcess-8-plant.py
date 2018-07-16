@@ -33,7 +33,7 @@ if __name__ == '__main__':
             unavailable_df = pd.concat([unavailable_df, expected_time], axis = 0)
 
 
-    plant_df.to_excel(param.data_folder_path + '/plant/clean_plant.xlsx', index = False)
+    unavailable_df.to_excel(param.data_folder_path + '/plant/clean_plant.xlsx', index = False)
 
     print('all done')
 

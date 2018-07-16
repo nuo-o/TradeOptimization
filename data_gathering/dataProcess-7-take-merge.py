@@ -18,26 +18,33 @@ if __name__ == '__main__':
     da_df, da_config = configuration.readFile('DA')
     da_df = TimeSeriesData(da_df, da_config.date_col, da_config.forecast_v, pteCol=da_config.pte_col).file
     plant_df, plant_config = configuration.readFile('clean-plant')
-
-
-    df1 = da_df.merge(solar_df, left_on = da_config.date_col, right_on=solar_config.date_col, how = 'left')
+    df0 = da_df.merge(plant_df, left_on = da_config.date_col, right_on=plant_config.date_col, how = 'left')
+    df0['UnavailableAmount'] = df0['UnavailableAmount'].fillna(0)
+    df1 = df0.merge(solar_df, left_on=da_config.date_col, right_on=solar_config.date_col, how='left')
     df2 = df1.merge(wind_df, left_on = da_config.date_col, right_on=wind_config.date_col, how = 'left')
     df3 = df2.merge(temp_df, left_on = da_config.date_col, right_on=temp_config.date_col, how = 'left')
     df4 = df3.merge(take_df, left_on = da_config.date_col, right_on=take_config.date_col, how = 'left')
 
-    #impute
-    impute_val = ','.join([solar_config.forecast_v, wind_config.forecast_v, temp_config.forecast_v, take_config.forecast_v, da_config.forecast_v])
+    print('merge completed')
+
+    #impute by avg
+    impute_val = ','.join([solar_config.forecast_v, wind_config.forecast_v, temp_config.forecast_v, take_config.forecast_v, plant_config.forecast_v,da_config.forecast_v])
     date_col = da_config.date_col
     pte_col = da_config.pte_col
     ts = TimeSeriesData(df4, date_col, impute_val, pteCol = pte_col, convertTime = False)
     ts.fill_nan_by_avg(impute_val.split(','))
 
-    #DA-TAKE
-    ts.file['DA-TAKE'] = ts.file[da_config.forecast_v] - ts.file[take_config.forecast_v]
-    ts.file['DA>TAKE'] = [1 if dt>0 else 0 for dt in ts.file['DA-TAKE']]
-    ts.file.to_excel(param.data_folder_path + '/imbalance/final-take.xlsx', index=False)
+    print('impute completed')
 
-    print(','.join(ts.file.column))
+    #DA-TAKE
+    save_file = ts.file
+    save_file['DA-TAKE'] = ts.file[da_config.forecast_v] - ts.file[take_config.forecast_v]
+    save_file['DA>TAKE'] = [1 if dt>0 else 0 for dt in ts.file['DA-TAKE']]
+
+    print('saving file')
+    save_file.to_excel(param.data_folder_path + '/imbalance/final-take-add-unavailabe.xlsx', index=False)
+
+    print(','.join(ts.file.columns))
 
 
 

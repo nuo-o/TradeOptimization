@@ -6,7 +6,8 @@ from features.make_feature import make_feat_pipeline
 
 if __name__ == '__main__':
     model = XGBClassifier(learning_rate=0.001)
-    df, df_config = Configuration().readFile('final-take')
+    # df, df_config = Configuration().readFile('final-take')
+    df, df_config = Configuration().readFile('final-take2')
     date_col, val_col, target = df_config.date_col, df_config.forecast_v, 'DA>TAKE'
     ts = TimeSeriesData(df, date_col, val_col).file
 
