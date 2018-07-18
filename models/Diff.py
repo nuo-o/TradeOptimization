@@ -11,9 +11,9 @@ from sklearn.linear_model import LogisticRegression
 
 
 if __name__ == '__main__':
-    # model = XGBRegressor(learning_rate=0.005)
-    model = LogisticRegression()
-    model_name = 'LR'
+    model = XGBRegressor(learning_rate=0.005)
+    # model = LogisticRegression()
+    model_name = 'XGB'
     df, df_config = Configuration().readFile('final-diff')
     date_col,val_col = df_config.date_col, df_config.forecast_v
     target = 'Diff'
@@ -39,13 +39,15 @@ if __name__ == '__main__':
 
     out, feat_cols = cross_validation(train_x,train_y, model, classification=False)
 
-    cv_score = max(out['test_WMAPE(%)'])
-    model = out['models'][out['test_WMAPE(%)'].index(cv_score)]
-
     # feature importance
     if model_name == 'XGB':
         feat_imp = plot_feature_importance(model, feat_cols)[-10:]
         print(feat_imp)
+
+    cv_max_score = max(out['test_WMAPE(%)'])
+    model = out['models'][out['test_WMAPE(%)'].index(cv_max_score)]
+    cv_avg_score = np.mean(np.array(out['test_WMAPE(%)']))
+    print('cross validation:\nWMAPE(%)={}'.format(round(cv_avg_score,2)))
 
     # hold-out test
     print('hold-out:')
@@ -59,17 +61,17 @@ if __name__ == '__main__':
     hold_prediction['DeliveryDate'] = df.iloc[hold_split_index:][df_config.date_col]
     hold_prediction['true_diff'] = y
     hold_prediction['predict_diff'] = prediction
-    prediction_path = param.data_folder_path + '/results/hold-out-prediction/diff_MAE_' + str(int(hold_metrics['MAE'])) + '.xlsx'
+    prediction_path = param.data_folder_path + '/results/hold-out-prediction/diff_WMAPE_' + str(round(hold_metrics['WMAPE(%)'],2)) + '.xlsx'
     hold_prediction.to_excel(prediction_path, index=False)
     print('save hold-out prediction to {}'.format(prediction_path))
 
     # save result to file
-    save_result_path = param.data_folder_path + '/results/train_results/diff_MAE_'+str(int(hold_metrics['MAE'])) + '.txt'
+    save_result_path = param.data_folder_path + '/results/train_results/diff_WMAPE_'+str(round(hold_metrics['WMAPE(%)'],2)) + '.txt'
     with open(save_result_path, 'w') as f:
         f.write('train_size : test_size = {}:{}\n'.format(round(len(train_df) / len(df), 2), round(len(hold_df) / len(df), 2)))
 
         f.write('\nCross Validation Score:\n')
-        f.write('WMAPE = {}\n'.format(cv_score))
+        f.write('WMAPE = {}\n'.format(cv_max_score))
 
         f.write('\nTest Score:\n')
         f.write('WMAPE = {}\n'.format(hold_metrics['WMAPE(%)']))

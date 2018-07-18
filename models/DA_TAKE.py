@@ -53,7 +53,8 @@ if __name__ == '__main__':
     hold_prediction = pd.DataFrame()
     hold_prediction['DeliveryDate'] = df.iloc[hold_split_index:][df_config.date_col]
     hold_prediction['true_DA>TAKE'] = y
-    hold_prediction['predict_DA>TAKE'] = prediction_proba
+    hold_prediction['predict_DA>TAKE_proba'] = prediction_proba
+    hold_prediction['predict_DA>TAKE'] = prediction
     prediction_path = param.data_folder_path + '/results/hold-out-prediction/TAKE_AUC_' + str((hold_metrics['AUC'])) + '.xlsx'
     hold_prediction.to_excel(prediction_path, index=False)
     print('save hold-out prediction to {}'.format(prediction_path))
