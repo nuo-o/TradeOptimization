@@ -31,4 +31,4 @@ if __name__ == '__main__':
     checker = DataChecker(ts.file)
     checker.check_duplicate_forecast([diff_config.date_col])
 
-    ts.file.to_excel(param.data_folder_path + '/diff_all.xlsx', index=False)
+    ts.file.to_excel(param.data_folder_path + '/position/diff_all.xlsx', index=False)

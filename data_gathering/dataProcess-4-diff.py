@@ -21,6 +21,8 @@ if __name__ == '__main__':
     clean_diff = pipeline(diff, ['First_Forecast_Volume'])
     clean_diff['ActualVolumes'] = [ math.inf if np.isnan(x) else x for x in clean_diff['ActualVolumes']]
     clean_diff['Diff'] = clean_diff['First_Forecast_Volume'] - clean_diff['ActualVolumes']
+    clean_diff['MPE'] = clean_diff['Diff']/clean_diff['First_Forecast_Volume']
+    clean_diff = clean_diff[(clean_diff['missing_First_Forecast_Volume']==0) & (clean_diff['ActualVolumes'] !=0)]
 
-    clean_diff.to_excel( param.data_folder_path +'/position/diff_clean.xlsx', index = False)
+    clean_diff.drop(['missing_First_Forecast_Volume'], axis = 1).to_excel( param.data_folder_path +'/position/diff_clean.xlsx', index = False)
 

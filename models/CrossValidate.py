@@ -122,5 +122,6 @@ class Evaluator():
         metrics = {}
         metrics['AUC'] = AUC
         metrics['Accuracy'] = accuracy
-        metrics['Precision'] = round(precision_score(self.true, self.pred),2)
+        prediction = [1 if p >= 0.5 else 0 for p in self.pred]
+        metrics['Precision'] = round(precision_score(self.true, prediction),2)
         return metrics

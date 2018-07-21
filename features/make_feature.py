@@ -2,7 +2,7 @@ from utils.import_packages import *
 from features.features import make_date_feature, make_lag_feat, standardize_feat, plot_feature_importance,train_test_split
 
 
-def make_feat_pipeline(target, valCol, dateCol, lag_dict, df, targetCol, standardize = True):
+def make_feat_pipeline(target, valCol, dateCol, lag_dict, df, standardize = True):
     # extract weekday, month, dayofyear, year, isholiday
     df = make_date_feature(dateCol, df)
     # df = df.drop([dateCol], axis =1)
@@ -48,7 +48,7 @@ def make_feat_pipeline(target, valCol, dateCol, lag_dict, df, targetCol, standar
         df = standardize_feat(df, num_col)
 
     # return feats and targets
-    y = df[targetCol]
-    X = df.drop([targetCol, dateCol],axis=1)
+    y = df[target]
+    X = df.drop([target, dateCol],axis=1)
 
     return X, y
