@@ -9,15 +9,16 @@ if __name__ == '__main__':
     model = XGBRegressor()
     # model = LogisticRegression()
     model_name = 'XGB'
-    df, df_config = Configuration().readFile('final-diff')
-    ts = TimeSeriesData(df, df_config.date_col, df_config.forecast_v)
-    df = ts.file
+    df, df_config = Configuration().readFile('diff-MAPE') #add plant availability feature
+    df = TimeSeriesData(df, df_config.date_col, df_config.forecast_v).file
+    df = df.drop(['ActualVolumes','Diff'], axis = 1)
     target = 'MPE'
 
     # train-hold split
     hold_split_index = train_test_split(df, df_config.date_col, splitBySize=False, split_date=param.hold_out_date_begin)
     train_df, hold_df = df[:hold_split_index], df[hold_split_index:]
-    lag_dict = {target: [96, 96*2, 96*3]}
+    # lag_dict = {target: [96]}
+    lag_dict = {}
     X, Y = make_feat_pipeline(target, df_config.forecast_v, df_config.date_col, lag_dict, df, standardize=False)
 
     # cross-validate
@@ -39,7 +40,7 @@ if __name__ == '__main__':
     cv_max_score = max(out['test_WMAPE(%)'])
     model = out['models'][out['test_WMAPE(%)'].index(cv_max_score)]
     cv_avg_score = np.mean(np.array(out['test_WMAPE(%)']))
-    print('cross validation:\nWMAPE(%)={}'.format(round(cv_avg_score,2)))
+    print('cross validation:\nWMAPE(%)={}'.format(round(cv_avg_score,4)))
 
     # hold-out test
     print('hold-out:')
@@ -53,12 +54,12 @@ if __name__ == '__main__':
     hold_prediction['DeliveryDate'] = df.iloc[hold_split_index:][df_config.date_col]
     hold_prediction['true_diff'] = y
     hold_prediction['predict_diff'] = prediction
-    prediction_path = param.data_folder_path + '/results/hold-out-prediction/diffMPE_WMAPE_' + str(round(hold_metrics['WMAPE(%)'],2)) + '.xlsx'
+    prediction_path = param.data_folder_path + '/results/hold-out-prediction/' + target + '_WMAPE_' + str(round(hold_metrics['WMAPE(%)'],4)) + '.xlsx'
     hold_prediction.to_excel(prediction_path, index=False)
     print('save hold-out prediction to {}'.format(prediction_path))
 
     # save result to file
-    save_result_path = param.data_folder_path + '/results/train_results/diffMPE_WMAPE_'+str(round(hold_metrics['WMAPE(%)'],2)) + '.txt'
+    save_result_path = param.data_folder_path + '/results/train_results/'+target+'_WMAPE_'+str(round(hold_metrics['WMAPE(%)'],4)) + '.txt'
     with open(save_result_path, 'w') as f:
         f.write('train_size : test_size = {}:{}\n'.format(round(len(train_df) / len(df), 2), round(len(hold_df) / len(df), 2)))
 

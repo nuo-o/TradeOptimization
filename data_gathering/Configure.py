@@ -22,3 +22,10 @@ class Configuration():
             df = pd.read_excel(param.data_folder_path + config.data_path, sheet_name=config.sheet_name)
         return df, config
 
+    def add_time_to_date(self, df,dateCol, pteCol,periodByHour=4):
+        timeDate = []
+        for (date, pte) in zip(df[dateCol], df[pteCol]):
+            timeDate.append(date + timedelta(minutes=60 / periodByHour * (pte - 1)))
+        return timeDate
+
+

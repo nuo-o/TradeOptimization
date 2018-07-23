@@ -27,8 +27,8 @@ if __name__ == '__main__':
     # train_data_to_dataRobot[target] = train_y
     # test_data_to_dataRobot = hold_x
     # test_data_to_dataRobot[target] = hold_y
-    # train_data_to_dataRobot.to_excel(param.data_folder_path + '/data_robot/DA_TAKE_train_feat.xlsx', index = False)
-    # test_data_to_dataRobot.to_excel(param.data_folder_path + '/data_robot/DA_TAKE_test_feat.xlsx', index = False)
+    # train_data_to_dataRobot.to_excel(param.data_folder_path + '/data_robot/DA_train_feat.xlsx', index = False)
+    # test_data_to_dataRobot.to_excel(param.data_folder_path + '/data_robot/DA_test_feat.xlsx', index = False)
 
     # cross validation
     out, feat_cols = cross_validation(train_x, train_y, model, classification=False)
