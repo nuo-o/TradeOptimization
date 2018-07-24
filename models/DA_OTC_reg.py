@@ -6,11 +6,12 @@ from features.make_feature import make_feat_pipeline
 
 if __name__ == '__main__':
     model = XGBRegressor()
+    # model =
     df, df_config = Configuration().readFile('OTC-DA')
     df = TimeSeriesData(df, df_config.date_col, df_config.forecast_v, pteCol=df_config.pte_col).file
     target = 'DA'
     model_name = 'XGB'
-    # use 2016.1 to 2017.8 data for training DA price
+    # use 2016.1 to 2018.1 data for training DA price
     hold_split_index = train_test_split(df, df_config.date_col, splitBySize=False, split_date=param.hold_out_date_begin)
     train_df, hold_df = df[:hold_split_index], df[hold_split_index:]
     print('train:test = {}:{}'.format(round( len(train_df)/len(df), 2),round( len(hold_df)/len(df), 4)))

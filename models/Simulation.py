@@ -3,8 +3,8 @@ import utils.hardcode_parameters as param
 from scipy.stats.kde import gaussian_kde
 
 
-def get_simulated_imb_price(history, target, dateCol, pteCol, curTime, dateTimeCol):
-    history_start = curTime - timedelta(days=60)
+def get_simulated_imb_price(history, target, dateCol, pteCol, curTime, dateTimeCol,history_days):
+    history_start = curTime - timedelta(days=history_days)
     history = history[(history[dateTimeCol]<curTime)&(history[dateTimeCol]>=history_start)]
 
     # daily Imb/DA
@@ -12,6 +12,7 @@ def get_simulated_imb_price(history, target, dateCol, pteCol, curTime, dateTimeC
     ratio_kde = gaussian_kde(ratio)
 
     # hourly Imb/daily_imb
+    history['Take_From_hourly/Take_From_daily'] = history['Take_From']/history['Take_From_daily']
     multiplier = history.groupby(pteCol)['Take_From_hourly/Take_From_daily'].mean()
 
     return ratio_kde,multiplier
@@ -55,10 +56,14 @@ if __name__ == '__main__':
     # imb = imb.join(daily_da,on='Date',rsuffix='_daily')
     # daily_imb = imb.groupby('Date')['Take_From'].mean()
     # imb = imb.join(daily_imb,on='Date',rsuffix='_daily')
-    # imb.to_excel(param.data_folder_path + '/simulation_df.xlsx', index = False)
-    objective_func =2
-    num_resample = 100
+    # predict_da_take_prob = pd.read_excel(param.data_folder_path+'/results/hold-out-prediction/TAKE_AUC_0.5893.xlsx')
+    # imb = imb.merge(predict_da_take_prob,on='DeliveryDate',how='left')
+    # imb.to_excel(param.data_folder_path + '/simulation_df.xlsx',index =False)
 
+    strategy = 2
+    num_resample = 1000
+    num_historical_days = 60
+    use_strategy_prob = 0.7
 
     imb = pd.read_excel(param.data_folder_path + '/simulation_df.xlsx')
     hold_df = imb[imb['DeliveryDate']>=param.hold_out_date_begin]
@@ -78,7 +83,7 @@ if __name__ == '__main__':
         d,p,v,mpe,da,da_daily=hold_df.iloc[row_id][['Date','PERIOD','First_Forecast_Volume','predict_diff','predict_DA','predict-DA-daily']]
 
         if last_d !=d:
-            last_kde,last_multipliers = get_simulated_imb_price(imb,'Take_From','Date','PERIOD',d,'DeliveryDate')
+            last_kde,last_multipliers = get_simulated_imb_price(imb,'Take_From','Date','PERIOD', d,'DeliveryDate', num_historical_days)
             last_d = d
 
         # simulate imbalance price
@@ -87,28 +92,40 @@ if __name__ == '__main__':
         if v == 0:
             bid_space = np.arange( -1000, 0, 10)
         elif v>0:
-            bid_space = np.arange( int(v*0.5), int(v * 1.5), min(max(int(v * 0.1),5),25000))
+            bid_space = np.arange( int(v*0.5), min(int(v * 1.5),25000), min(max(int(v * 0.1),5),25000))
         else:
             bid_space = np.arange( max(-1000,int(v*2)), int(v*0.5), max(int(v*0.1),5))
 
         best_objective_v = -math.inf
         best_bid = v
-        for b in bid_space:
-            sim_pnl = (da - sim_imb_prices) * mpe * v
 
-            if objective_func == 1:
-                objective_v = sim_pnl.mean()/sim_pnl.var()
+        if strategy == 1:
+            if random.uniform(0,1)>=use_strategy_prob:
+                sim_pnl = (da-sim_imb_prices)*mpe*v
 
-                if best_objective_v < objective_v:
-                    best_objective_v = objective_v
-                    best_bid = b
+                for b in bid_space:
+                    objective_v = sim_pnl.mean() / sim_pnl.var()
 
-            elif objective_func ==2:
-                objective_v = np.sort(sim_pnl)[:max(1, int(len(sim_pnl)*0.05))].mean()
+                    if best_objective_v < objective_v:
+                        best_objective_v = objective_v
+                        best_bid = b
 
-                if best_objective_v < objective_v:
-                    best_objective_v = objective_v
-                    best_bid = b
+        elif strategy == 2:
+            if random.uniform(0,1)>=use_strategy_prob:
+                sim_pnl = (da-sim_imb_prices)*mpe*v
+
+                for b in bid_space:
+                    objective_v = np.sort(sim_pnl)[:max(1, int(len(sim_pnl)*0.1))].mean()
+
+                    if best_objective_v < objective_v:
+                        best_objective_v = objective_v
+                        best_bid = b
+
+        elif strategy == 3: # add DA>TAKE
+            pass
+
+        else:
+            raise ValueError('No defined objective functions')
 
         best_bids.append(best_bid)
         row_id +=1
@@ -117,8 +134,10 @@ if __name__ == '__main__':
 
     # evaluation
     hold_df['DA-TAKE'] = hold_df['true_DA']-hold_df['Take_From']
-    hold_df['baseline_pnl'] = hold_df['DA-TAKE']*hold_df['true_diff']
-    hold_df['our_pnl'] = hold_df['DA-TAKE']*(hold_df['our_bid']-hold_df['ActualVolumes'])
+    hold_df['baseline_pnl'] = hold_df['DA-TAKE']*(hold_df['First_Forecast_Volume']-hold_df['ActualVolumes'])/1000
+    hold_df['our_pnl'] = hold_df['DA-TAKE']*(hold_df['our_bid']-hold_df['ActualVolumes'])/1000
+
+    print('baseline_pnl-our_pn= {}'.format(sum(hold_df['baseline_pnl'])-sum(hold_df['our_pnl'])))
 
     # daily pnl
     daily_base_pnl = hold_df.groupby('Date')['baseline_pnl'].mean().reset_index()
@@ -135,5 +154,19 @@ if __name__ == '__main__':
     daily_pnl_var = daily_base_pnl_var.merge(daily_our_pnl_var,on='Date',how='inner')
     evaluation = daily_pnl.merge(daily_pnl_var, on='Date',how='inner')
 
-    evaluation.to_excel(param.data_folder_path + '/results/hold-out-prediction/simulation_2_evaluate.xlsx', index = False)
-    hold_df.to_excel(param.data_folder_path + '/results/hold-out-prediction/simulation_2.xlsx', index=False)
+    evaluation.to_excel(param.hold_out_prediction_path + '/simulation'+ str(strategy) + '_evaluate.xlsx', index = False)
+    hold_df.to_excel(param.hold_out_prediction_path + '/simulation_'+str(strategy)+'.xlsx', index=False)
+
+    # print
+    a = hold_df[ hold_df['baseline_pnl']!= hold_df['our_pnl']]
+    b = hold_df[ hold_df['baseline_pnl']< hold_df['our_pnl']]
+    print('{}% used strategy'.format(100*len(a)/len(hold_df)))
+    print('{}% get improved'.format(100*len(b)/len(a)))
+
+    c = hold_df[ hold_df['baseline_pnl']> hold_df['our_pnl']]
+    c['loss'] = c['baseline_pnl']-c['our_pnl']
+    avg_loss = sum(c['loss'])/len(c)
+    print('avg loss = {}'.format( round(avg_loss,4)))
+
+    avg_win = sum(b['our_pnl']-b['baseline_pnl'])
+    print('avg win = {}'.format( round(avg_win), 4))

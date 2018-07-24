@@ -1,6 +1,7 @@
 from datetime import datetime,date, timedelta
 
 data_folder_path = '../data_gathering/data'
+hold_out_prediction_path = data_folder_path + '/results/hold-out-prediction/'
 weather_folder = data_folder_path + '/weather-forecast'
 day_ahead_folder = data_folder_path + '/day-ahead'
 trade_folder = data_folder_path + '/position'

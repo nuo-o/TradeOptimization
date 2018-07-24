@@ -25,17 +25,17 @@ if __name__ == '__main__':
     lag_dict = {target: [96, 96 * 2, 96 * 3],
                 'DA': [96],
                 'take_from_system_kWhPTE': [96]}
-    X, y = make_feat_pipeline(target, val_col, date_col, lag_dict, df, target, standardize=False)
+    X, y = make_feat_pipeline(target, val_col, date_col, lag_dict, df, standardize=False)
 
     train_x, hold_x = X[:hold_split_index], X[hold_split_index:]
     train_y, hold_y = y[:hold_split_index], y[hold_split_index:]
 
-    train_data_to_dataRobot = train_x
-    train_data_to_dataRobot[target] = train_y
-    test_data_to_dataRobot = hold_x
-    test_data_to_dataRobot[target] = hold_y
-    train_data_to_dataRobot.to_excel(param.data_folder_path + '/data_robot/DA_TAKE_train_feat.xlsx', index = False)
-    test_data_to_dataRobot.to_excel(param.data_folder_path + '/data_robot/DA_TAKE_test_feat.xlsx', index = False)
+    # train_data_to_dataRobot = train_x
+    # train_data_to_dataRobot[target] = train_y
+    # test_data_to_dataRobot = hold_x
+    # test_data_to_dataRobot[target] = hold_y
+    # train_data_to_dataRobot.to_excel(param.data_folder_path + '/data_robot/DA_TAKE_train_feat.xlsx', index = False)
+    # test_data_to_dataRobot.to_excel(param.data_folder_path + '/data_robot/DA_TAKE_test_feat.xlsx', index = False)
 
     # cross validation
     out, feat_cols = cross_validation(train_x, train_y, model, classification=True)
@@ -51,7 +51,7 @@ if __name__ == '__main__':
 
     # hold-out test
     print('hold-out:')
-    X,y = make_feat_pipeline(target, val_col, date_col, lag_dict, hold_df, target, standardize=False)
+    X,y = make_feat_pipeline(target, val_col, date_col, lag_dict, hold_df, standardize=False)
     prediction = model.predict(X)
     prediction_proba = model.predict_proba(X)[:,1]
     hold_metrics = Evaluator(prediction, y).classification_metrics()
