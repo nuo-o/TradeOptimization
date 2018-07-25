@@ -60,6 +60,7 @@ def cross_validation(X, y, cv_model, n_folds=5, classification = True, print_tem
             train_metrics = Evaluator(train_pred, train_y).regression_metrics()
             test_metrics = Evaluator(test_pred, test_y).regression_metrics()
             results['test_WMAPE(%)'].append(test_metrics['WMAPE(%)'])
+            results['test_MAPE(%)'].append(test_metrics['MAPE(%)'])
             results['models'].append(cv_model)
 
         if print_temp_info:
@@ -102,7 +103,7 @@ class Evaluator():
     def regression_metrics(self):
         error = self.true-self.pred
         relative_error = error / self.true
-        mae = round(np.sum(abs(relative_error)),4)
+        mae = round(np.sum(abs(error))/len(error),4)
         mpe = round(100*np.sum(relative_error)/len(self.pred),4)
         mape = round(100*np.sum(abs(relative_error))/len(self.pred),4)
         wmape = round(100*np.sum(abs(error))/np.sum(abs(self.true))/len(self.pred),4)

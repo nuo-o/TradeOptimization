@@ -32,12 +32,12 @@ if __name__ == '__main__':
     # test_data_to_dataRobot.to_excel(param.data_folder_path + '/data_robot/DA_test_feat.xlsx', index = False)
 
     # cross validation
-    out, feat_cols = cross_validation(train_x, train_y, model, classification=False)
+    out, feat_cols = cross_validation(train_x, train_y, model, classification=False,n_folds=15)
 
-    cv_max_score = max(out['test_WMAPE(%)'])
-    model = out['models'][out['test_WMAPE(%)'].index(cv_max_score)]
-    cv_avg_score = np.mean(np.array(out['test_WMAPE(%)']))
-    print('cross validation:\nWMAPE(%)={}'.format(round(cv_avg_score,2)))
+    cv_max_score = min(out['test_MAPE(%)'])
+    model = out['models'][out['test_MAPE(%)'].index(cv_max_score)]
+    # cv_avg_score = np.mean(np.array(out['test_MAPE(%)']))
+    print('cross validation:\nMAPE(%)={}'.format(round(cv_max_score,6)))
 
     # feature importance
     if model_name == 'XGB':
@@ -56,20 +56,20 @@ if __name__ == '__main__':
     hold_prediction['DeliveryDate'] = df.iloc[hold_split_index:][df_config.date_col]
     hold_prediction['true_DA'] = y
     hold_prediction['predict_DA'] = prediction
-    prediction_path = param.data_folder_path + '/results/hold-out-prediction/DA_WMAPE_' + str(round(hold_metrics['WMAPE(%)'],4)) + '.xlsx'
+    prediction_path = param.data_folder_path + '/results/hold-out-prediction/DA_MAPE_' + str(round(hold_metrics['MAPE(%)'],5)) + '.xlsx'
     hold_prediction.to_excel(prediction_path, index=False)
     print('save hold-out prediction to {}'.format(prediction_path))
 
     # save result to file
-    save_result_path = param.data_folder_path + '/results/train_results/DA_WMAPE_'+str(round(hold_metrics['WMAPE(%)'],4)) + '.txt'
+    save_result_path = param.data_folder_path + '/results/train_results/DA_MAPE_'+str(round(hold_metrics['MAPE(%)'],5)) + '.txt'
     with open(save_result_path, 'w') as f:
-        f.write('train_size : test_size = {}:{}\n'.format(round(len(train_df) / len(df), 2), round(len(hold_df) / len(df), 4)))
+        f.write('train_size : test_size = {}:{}\n'.format(round(len(train_df) / len(df), 2), round(len(hold_df) / len(df), 5)))
 
         f.write('\nCross Validation Score:\n')
-        f.write('WMAPE = {}\n'.format(cv_max_score))
+        f.write('MAPE(%) = {}\n'.format(cv_max_score))
 
         f.write('\nTest Score:\n')
-        f.write('WMAPE = {}\n'.format(hold_metrics['WMAPE(%)']))
+        f.write('MAPE(%) = {}\n'.format(hold_metrics['MAPE(%)']))
 
         f.write('\nmodel:\n')
         f.write(str(model))

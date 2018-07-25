@@ -8,8 +8,7 @@ if __name__ == '__main__':
     The regular expressions for 'SEQ' column is different from 2016 March."""
 
     wkd_df, wkd_config = Configuration().readFile('OTC-weekend')
-    # filter data from 2016-01-01
-    date_start = datetime(2016,1,1)
+    date_start = datetime(2010,1,1)
     wkd_df = wkd_df[wkd_df['TRADEDATE']>= date_start]
     pattern1 = re.compile(r'\d{2}/\d{2}-\d{2}')
     pattern2 = re.compile(r'\d{2}-\d{2}/\d{2}/\d{2}')
