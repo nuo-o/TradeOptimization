@@ -77,18 +77,23 @@ if __name__ == '__main__':
 
     file = 'final-take'
     print('check file:{}...'.format(file))
-    df, config = Configuration().readFile(file)
+    # df, config = Configuration().readFile(file)
+
+    df = pd.read_excel( param.data_folder_path + '/day-ahead/raw-da-two-tables.xlsx', sheet_name='Sheet1')
 
     # if no realtime column, first convert
     # ts =TimeSeriesData(df, config.date_col, config.forecast_v, pteCol = config.pte_col)
     # df = ts.file
     # else
-    df[config.date_col] = pd.to_datetime(df[config.date_col])
+    # df[config.date_col] = pd.to_datetime(df[config.date_col])
+
+    # checker = DataChecker(df)
+    # a = checker.check_missing_dates(config.date_col)
+    # checker.check_duplicate_forecast([config.date_col])
 
     checker = DataChecker(df)
-    a = checker.check_missing_dates(config.date_col)
-    checker.check_duplicate_forecast([config.date_col])
-
+    a = checker.check_missing_dates( 'DeliveryDate' )
+    checker.check_duplicate_forecast( ['DeliveryDate','Name'])
     # forecast_v = config.forecast_v.split(',')
     #
     # for col in forecast_v:

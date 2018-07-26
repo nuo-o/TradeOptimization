@@ -5,6 +5,12 @@ from data_gathering.Configure import Configuration
 from data_gathering.CleanData import convert2RealTime
 from models.Strategies import *
 
+def compute_pnl(bid, actual_vol, true_da_price, true_imb_price):
+    vol_diff = bid - actual_vol
+    price_diff = true_da_price - true_imb_price
+    total_pnl = vol_diff * price_diff/1000
+    return total_pnl
+
 # def evaluate_strategy(bid, da_take_price, actual, printInfo):
 #     model_diff = bid - actual
 #     avgAbsDiff = sum(abs(model_diff))/len(model_diff)
