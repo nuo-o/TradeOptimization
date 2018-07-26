@@ -138,13 +138,13 @@ if __name__ == '__main__':
     imb = pd.read_excel(param.data_folder_path + '/a_simulation.xlsx')
     hold_df = pd.read_excel(param.data_folder_path + '/b_simulation.xlsx')
 
-    strategy = 3
+    strategy = 2
     num_resample = 1000
     num_historical_days = 60
-    use_strategy_prob = 0.5
+    use_strategy_prob = 0
     min_bid_value_when_forecast_zero = -1000
     bid_interval_when_forecast_zero = 10
-    experiment_times = 10
+    experiment_times = 1
     current_experiment = 0
     experiment_result = []
 
@@ -182,10 +182,12 @@ if __name__ == '__main__':
                     sim_imb_prices = last_kde.resample(num_resample) * da_daily * last_multipliers[p]
                     best_bid = search_best_pnl_var(da, sim_imb_prices, mpe, v, bid_space)
 
-            elif strategy == 3: # use DA>TAKE as probability
+            elif strategy == 3: # use DA>TAKE prediction as a heuristic strategy
                 if random.uniform(0,1)>= da_prob:
-                    sim_imb_prices = last_kde.resample(num_resample) * da_daily * last_multipliers[p]
-                    best_bid = search_best_quantile(da, sim_imb_prices, mpe, v, bid_space)
+                    if da_prob >=0.5:
+                        best_bid = v * 1.5
+                    else:
+                        best_bid = v * 0.5
 
             elif strategy == 4:
                 if random.uniform(0,1)>= da_prob:
@@ -204,10 +206,10 @@ if __name__ == '__main__':
         hold_df['our_pnl'] = compute_pnl(hold_df['our_bid'], hold_df['ActualVolumes'], \
                                          hold_df['true_DA'], hold_df['Take_From'])
         total_baseline_pnl = sum(hold_df['baseline_pnl'])
-        improvement = total_baseline_pnl-sum(hold_df['our_pnl'])
+        improvement = sum(hold_df['our_pnl']) - total_baseline_pnl
         print('total_baseline_pnl = {}'.format(sum(hold_df['baseline_pnl'])))
-        print('baseline_pnl-our_pnl= {}'.format(improvement))
-        experiment_result.append(improvement*100/total_baseline_pnl)
+        print('our_pnl-baseline_pnl= {}'.format(improvement))
+        experiment_result.append(improvement*100/abs(total_baseline_pnl))
 
         # save result to file
         # daily pnl
@@ -225,10 +227,12 @@ if __name__ == '__main__':
         daily_pnl = daily_base_pnl.merge(daily_our_pnl,on='Date',how='inner')
         daily_pnl_var = daily_base_pnl_var.merge(daily_our_pnl_var,on='Date',how='inner')
         evaluation = daily_pnl.merge(daily_pnl_var, on='Date',how='inner')
-        evaluation['base_pnl/var'] = evaluation['base_pnl_daily']
 
-        evaluation.to_excel(param.hold_out_prediction_path + '/strategy_'+ str(strategy) +'_exp'+ str(current_experiment)+'_evaluate.xlsx', index = False)
-        hold_df.to_excel(param.hold_out_prediction_path + '/strategy_'+str(strategy)+'_exp' + str(current_experiment)+'.xlsx', index=False)
+        path1=param.hold_out_prediction_path + 'strategy_'+ str(strategy) +'_exp'+ str(current_experiment)+'_evaluate.xlsx'
+        evaluation.to_excel(path1, index = False)
+        path2=param.hold_out_prediction_path + 'strategy_' + str(strategy) + '_exp' + str(current_experiment) + '.xlsx'
+        hold_df.to_excel(path2, index=False)
+        print('save result to:\n{}\n{}'.format(path1,path2))
 
         # print
         a = hold_df[ hold_df['our_bid']!= hold_df['First_Forecast_Volume']]
