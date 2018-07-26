@@ -6,12 +6,13 @@ from models.StrategyValidate import compute_pnl
 
 def search_best_quantile(da, sim_imb_prices, mpe, v, bid_space):
     best_objective_v = -math.inf
-    best_bid = v
+    best_bid =  v
 
-    sim_pnl = (da - sim_imb_prices) * mpe * v
+    actual_v = v - mpe*v
 
     for b in bid_space:
-        objective_v = np.sort(sim_pnl)[:max(1, int(len(sim_pnl) * 0.1))].mean()
+        sim_pnl = (da-sim_imb_prices)*(b - actual_v)
+        objective_v = np.sort(sim_pnl)[:max(1, int(len(sim_pnl)*0.1))].mean()
 
         if best_objective_v < objective_v:
             best_objective_v = objective_v
@@ -24,9 +25,9 @@ def search_best_pnl_var(da,sim_imb_prices,mpe,v,bid_space):
     best_objective_v = -math.inf
     best_bid = v
 
-    sim_pnl = (da - sim_imb_prices) * mpe * v
-
+    actual = v - v*mpe
     for b in bid_space:
+        sim_pnl = (da - sim_imb_prices) * (b - actual)
         objective_v = sim_pnl.mean() / sim_pnl.var()
 
         if best_objective_v < objective_v:
@@ -138,13 +139,13 @@ if __name__ == '__main__':
     imb = pd.read_excel(param.data_folder_path + '/a_simulation.xlsx')
     hold_df = pd.read_excel(param.data_folder_path + '/b_simulation.xlsx')
 
-    strategy = 2
+    strategy = 3
     num_resample = 1000
     num_historical_days = 60
     use_strategy_prob = 0
     min_bid_value_when_forecast_zero = -1000
     bid_interval_when_forecast_zero = 10
-    experiment_times = 1
+    experiment_times = 2
     current_experiment = 0
     experiment_result = []
 
@@ -173,14 +174,13 @@ if __name__ == '__main__':
             best_objective_v = -math.inf
             best_bid = v
 
-            if (strategy == 1) & if_use_strategy[row_id]:
+            if (strategy == 1):
                 sim_imb_prices = last_kde.resample(num_resample) * da_daily * last_multipliers[p]
                 best_bid = search_best_quantile(da, sim_imb_prices, mpe, v, bid_space)
 
-            elif (strategy == 2) & if_use_strategy[row_id]:
-                if if_use_strategy[row_id]:
-                    sim_imb_prices = last_kde.resample(num_resample) * da_daily * last_multipliers[p]
-                    best_bid = search_best_pnl_var(da, sim_imb_prices, mpe, v, bid_space)
+            elif (strategy == 2):
+                sim_imb_prices = last_kde.resample(num_resample) * da_daily * last_multipliers[p]
+                best_bid = search_best_pnl_var(da, sim_imb_prices, mpe, v, bid_space)
 
             elif strategy == 3: # use DA>TAKE prediction as a heuristic strategy
                 if random.uniform(0,1)>= da_prob:
@@ -190,9 +190,10 @@ if __name__ == '__main__':
                         best_bid = v * 0.5
 
             elif strategy == 4:
-                if random.uniform(0,1)>= da_prob:
-                    sim_imb_prices = last_kde.resample(num_resample) * da_daily * last_multipliers[p]
-                    best_bid = search_best_pnl_var(da, sim_imb_prices, mpe, v, bid_space)
+                if da_prob >= 0.5:
+                    best_bid = v * 1.5
+                else:
+                    best_bid = v * 0.5
 
             best_bids.append(best_bid)
             row_id +=1
