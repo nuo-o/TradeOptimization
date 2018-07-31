@@ -1,18 +1,39 @@
 from utils.import_packages import *
 import utils.hardcode_parameters as param
 from scipy.stats.kde import gaussian_kde
-from models.StrategyValidate import compute_pnl
+from data_gathering.DataChecker import *
 
 
-def search_best_quantile(da, sim_imb_prices, mpe, v, bid_space):
+def compute_pnl(bid, actual_vol, take_price, feed_price, da_price):
+    PNL = []
+
+    if len(bid)==len(actual_vol)==len(da_price):
+        for b,a,take,feed,da in zip(bid, actual_vol, take_price, feed_price, da_price):
+            vol_diff = b - a
+
+            if b>a:#defit
+                price_diff = da-take
+            else:#surplus
+                price_diff = da-feed
+
+            pnl = vol_diff*price_diff/1000
+            PNL.append(pnl)
+    else:
+        raise ValueError('wrong length of data for computing pnl')
+    return PNL
+
+
+def search_best_quantile(da, sim_take_prices, sim_feed_prices, mpe, v, bid_space):
     best_objective_v = -math.inf
     best_bid =  v
-
     actual_v = v - mpe*v
 
     for b in bid_space:
-        sim_pnl = (da-sim_imb_prices)*(b - actual_v)
-        objective_v = np.sort(sim_pnl)[:max(1, int(len(sim_pnl)*0.1))].mean()
+        sim_PNL = []
+        for (take,feed) in zip(sim_take_prices, sim_feed_prices):
+            sim_pnl = compute_pnl([b],[actual_v],[take],[feed],[da])
+            sim_PNL.append(sim_pnl)
+        objective_v = np.sort(sim_PNL)[:max(1, int(len(sim_PNL)*0.1))].mean()
 
         if best_objective_v < objective_v:
             best_objective_v = objective_v
@@ -21,14 +42,38 @@ def search_best_quantile(da, sim_imb_prices, mpe, v, bid_space):
     return best_bid
 
 
-def search_best_pnl_var(da,sim_imb_prices,mpe,v,bid_space):
+def search_best_sum_var(da, sim_take_prices, sim_feed_prices, mpe, v, bid_space):
+    best_objective_v = -math.inf
+    best_bid = v
+    actual_v = v - v*mpe
+
+    for b in bid_space:
+        sim_PNL = []
+        for (take,feed) in zip(sim_take_prices, sim_feed_prices):
+            sim_pnl = compute_pnl([b], [actual_v], [take], [feed], [da])
+            sim_PNL.append(sim_pnl)
+        sim_PNL = np.array(sim_PNL)
+        objective_v = sim_PNL.sum()/ sim_PNL.var()
+
+        if best_objective_v < objective_v:
+            best_objective_v = objective_v
+            best_bid = b
+
+    return best_bid
+
+
+def search_best_mean_var(da, sim_take_prices, sim_feed_prices, mpe, v, bid_space):
     best_objective_v = -math.inf
     best_bid = v
 
-    actual = v - v*mpe
+    actual_v = v - v * mpe
+
     for b in bid_space:
-        sim_pnl = (da - sim_imb_prices) * (b - actual)
-        objective_v = sim_pnl.mean() / sim_pnl.var()
+        sim_PNL = []
+        for (take, feed) in zip(sim_take_prices, sim_feed_prices):
+            sim_pnl = compute_pnl([b],[actual_v],[take],[feed],[da])
+            sim_PNL.append(sim_pnl)
+        objective_v = sim_PNL.mean() / sim_PNL.var()
 
         if best_objective_v < objective_v:
             best_objective_v = objective_v
@@ -37,61 +82,22 @@ def search_best_pnl_var(da,sim_imb_prices,mpe,v,bid_space):
     return best_bid
 
 
-def sample_ratioed_imb_prices(num_samples, ratio, da_daily, multiplier, da, kde):
-    num_pos_sample = int(num_samples*ratio)
-    num_neg_sample = num_samples - num_pos_sample
-
-    sim_imb_prices = []
-    num_p = 0
-    num_n = 0
-
-    while (num_p + num_n) < num_samples:
-        p = last_kde.resample(1).reshape(-1)[0] * da_daily * multiplier
-        # sim_imb_price = last_kde.resample(1)*da_daily*multiplier
-
-        if (da > p) & (num_p < num_pos_sample):
-            sim_imb_prices.append(p)
-            num_p +=1
-
-        elif ( da < p) & (num_n < num_neg_sample):
-            sim_imb_prices.append(p)
-            num_n +=1
-
-    return sim_imb_prices
-
-
-def get_simulated_imb_price(history, pteCol, curTime, dateTimeCol,history_days):
+def get_simulated_imb_price(history, pteCol, curTime, dateTimeCol,history_days,imbPriceType):
     history_start = curTime - timedelta(days=history_days)
     history = history[(history[dateTimeCol]<curTime)&(history[dateTimeCol]>=history_start)]
 
     # daily Imb/DA
-    ratio = history['Take_From_daily']/history['DayAheadPrice_daily']
+    imb_daily_name = imbPriceType+'_daily'
+    imb_multiplier_name = imbPriceType+'/'+imb_daily_name
+
+    ratio = history[imb_daily_name]/history['DayAheadPrice_daily']
     ratio_kde = gaussian_kde(ratio)
 
     # hourly Imb/daily_imb
-    history['Take_From_hourly/Take_From_daily'] = history['Take_From']/history['Take_From_daily']
-    multiplier = history.groupby(pteCol)['Take_From_hourly/Take_From_daily'].mean()
+    history[imb_multiplier_name] = history[imbPriceType]/history[imb_daily_name]
+    multiplier = history.groupby(pteCol)[imb_multiplier_name].mean()
 
     return ratio_kde,multiplier
-
-
-def get_price_ratio_dist(history, target, dateCol):
-    daily_imb = history.groupby(dateCol)[target].mean().reset_index()
-    daily_imb_KDE = gaussian_kde(daily_imb['TAKE/DA'])
-    return daily_imb_KDE
-
-
-def get_pte_multiplier(history, target, pteCol):
-    # pte_rt_price/daily_rt_price
-    pte_values = set(history[pteCol])
-    pte_multiplier = {}
-
-    hourly = history.groupby(pteCol)[target].mean()
-
-    for pte in pte_values:
-        pte_multiplier[pte] = hourly[pteCol]
-
-    return pte_multiplier
 
 
 def build_search_bid_space(v, a, b, min_ratio=0.5, max_ratio=1.5,interval=0.1):
@@ -107,22 +113,26 @@ def build_search_bid_space(v, a, b, min_ratio=0.5, max_ratio=1.5,interval=0.1):
 
 
 if __name__ == '__main__':
-
+    #
     # con = Configuration()
     # imb, imb_config = con.readFile('baseline')
-    # imb = imb[['Take_From','DeliveryDate','DayAheadPrice','ActualVolumes','First_Forecast_Volume','PERIOD']]
-    # imb = imb.rename(columns={'DeliveryDate':'Date'})
+    # imb = imb[['Take_From','Feed_Into','DeliveryDate','DayAheadPrice','ActualVolumes','First_Forecast_Volume','PERIOD']]
+    # imb = imb.rename(columns={'DeliveryDate':'Date','TotalPnL':'base_pnl'})
     # imb['DeliveryDate'] = con.add_time_to_date(imb,'Date','PERIOD')
+    # print(len(imb))
     # imb = imb.dropna()
+    # print(len(imb))
     #
     # daily_da = imb.groupby('Date')['DayAheadPrice'].mean()
     # imb = imb.join(daily_da,on='Date',rsuffix='_daily')
-    # daily_imb = imb.groupby('Date')['Take_From'].mean()
-    # imb = imb.join(daily_imb,on='Date',rsuffix='_daily')
+    # daily_take = imb.groupby('Date')['Take_From'].mean()
+    # imb = imb.join(daily_take, on='Date', rsuffix='_daily')
+    # daily_feed = imb.groupby('Date')['Feed_Into'].mean()
+    # imb = imb.join(daily_feed, on='Date', rsuffix='_daily')
     #
     # hold_df = imb[imb['DeliveryDate']>=param.hold_out_date_begin]
-    # predict_da_take_prob = pd.read_excel(param.data_folder_path+'/results/hold-out-prediction/TAKE_AUC_0.5893.xlsx')
-    # hold_df = hold_df.merge(predict_da_take_prob,on='DeliveryDate',how='inner')
+    # # predict_da_take_prob = pd.read_excel(param.data_folder_path+'/results/hold-out-prediction/TAKE_AUC_0.5893.xlsx')
+    # # hold_df = hold_df.merge(predict_da_take_prob,on='DeliveryDate',how='inner')
     #
     # est_DA, _ = Configuration().readFile('predict-DA')
     # mpe, _ = Configuration().readFile('predict-MPE')
@@ -131,21 +141,21 @@ if __name__ == '__main__':
     # est_DA_daily = hold_df.groupby('Date')['predict_DA'].mean().reset_index()
     # est_DA_daily = est_DA_daily.rename(columns={'predict_DA':'predict_DA_daily'})
     # hold_df = hold_df.merge(est_DA_daily,on='Date',how='inner')
-    # #
+    #
     # imb.to_excel(param.data_folder_path + '/a_simulation.xlsx', index = False)
     # hold_df.to_excel(param.data_folder_path + '/b_simulation.xlsx',index = False)
-    # #
 
+#############################
     imb = pd.read_excel(param.data_folder_path + '/a_simulation.xlsx')
-    hold_df = pd.read_excel(param.data_folder_path + '/b_simulation.xlsx')
+    hold_df = pd.read_excel(param.data_folder_path + '/b_simulation_.xlsx')
+    evaluate = False
 
-    strategy = 3
+    strategy = 1
     num_resample = 1000
     num_historical_days = 60
-    use_strategy_prob = 0
     min_bid_value_when_forecast_zero = -1000
     bid_interval_when_forecast_zero = 10
-    experiment_times = 2
+    experiment_times = 1
     current_experiment = 0
     experiment_result = []
 
@@ -155,19 +165,28 @@ if __name__ == '__main__':
 
         row_id = 0
         best_bids = []
-        last_d = None
-        last_kde = None
-        last_multipliers = None
-        if_use_strategy = np.random.uniform(0,1,len(hold_df))
-        if_use_strategy = if_use_strategy>=use_strategy_prob
+        last_sim_day = None
+        take_kde = None
+        feed_kde = None
+        take_multipliers = None
+        feed_multipliers = None
         different_bid = []
 
+        tempt = datetime(2018,7,1)
         while row_id<len(hold_df):
-            d,p,v,mpe,da,da_daily,da_prob=hold_df.iloc[row_id][['Date','PERIOD','First_Forecast_Volume','predict_diff','predict_DA','predict_DA_daily','predict_DA>TAKE_proba']]
+            #
+            # if row_id %10000:
+            #     print('processed:{}%'.format(int(100*(row_id+1)/len(hold_df))))
 
-            if last_d !=d:
-                last_kde,last_multipliers = get_simulated_imb_price(imb,'PERIOD', d,'DeliveryDate', num_historical_days)
-                last_d = d
+            d,p,v,da,da_daily =hold_df.iloc[row_id][['Date','PERIOD','First_Forecast_Volume','predict_DA','predict_DA_daily']]
+
+            if d > tempt:
+                print()
+                tempt = d
+            if last_sim_day !=d:
+                take_kde, take_multipliers = get_simulated_imb_price(imb,'PERIOD',d,'DeliveryDate',num_historical_days,'Take_From')
+                feed_kde, feed_multipliers = get_simulated_imb_price(imb,'PERIOD',d,'DeliveryDate',num_historical_days,'Feed_Into')
+                last_sim_day = d
 
             bid_space = build_search_bid_space(v, min_bid_value_when_forecast_zero, bid_interval_when_forecast_zero)
 
@@ -175,82 +194,100 @@ if __name__ == '__main__':
             best_bid = v
 
             if (strategy == 1):
-                sim_imb_prices = last_kde.resample(num_resample) * da_daily * last_multipliers[p]
-                best_bid = search_best_quantile(da, sim_imb_prices, mpe, v, bid_space)
+                sim_take_prices = take_kde.resample(num_resample)*da_daily*take_multipliers[p]
+                sim_feed_prices = feed_kde.resample(num_resample)*da_daily*feed_multipliers[p]
+
+                best_bid = search_best_quantile(da, sim_take_prices, sim_feed_prices, 0, v, bid_space)
 
             elif (strategy == 2):
-                sim_imb_prices = last_kde.resample(num_resample) * da_daily * last_multipliers[p]
-                best_bid = search_best_pnl_var(da, sim_imb_prices, mpe, v, bid_space)
+                sim_take_prices = take_kde.resample(num_resample)*da_daily*take_multipliers[p]
+                sim_feed_prices = feed_kde.resample(num_resample)*da_daily*feed_multipliers[p]
 
-            elif strategy == 3: # use DA>TAKE prediction as a heuristic strategy
-                if random.uniform(0,1)>= da_prob:
-                    if da_prob >=0.5:
-                        best_bid = v * 1.5
-                    else:
-                        best_bid = v * 0.5
+                best_bid = search_best_sum_var(da, sim_take_prices, sim_feed_prices, 0, v, bid_space)
 
-            elif strategy == 4:
-                if da_prob >= 0.5:
-                    best_bid = v * 1.5
-                else:
-                    best_bid = v * 0.5
+            elif strategy ==3:
+                sim_take_prices = take_kde.resample(num_resample) * da_daily * take_multipliers[p]
+                sim_feed_prices = feed_kde.resample(num_resample) * da_daily * feed_multipliers[p]
+
+                best_bid = search_best_mean_var(da, sim_take_prices, sim_feed_prices, 0, v, bid_space)
+
+            # elif strategy == 4: # use DA>TAKE prediction as a heuristic strategy
+            #     if random.uniform(0,1)>= da_prob:
+            #         if da_prob >=0.5:
+            #             best_bid = v * 1.5
+            #         else:
+            #             best_bid = v * 0.5
+            #
+            # elif strategy == 5:
+            #     if da_prob >= 0.5:
+            #         best_bid = v * 1.5
+            #     else:
+            #         best_bid = v * 0.5
 
             best_bids.append(best_bid)
             row_id +=1
 
         hold_df['our_bid'] = best_bids
+        if not evaluate:
+            hold_df.to_excel(param.data_folder_path + '/operation_bid.xlsx', index = False)
+            print('save predicted bid value to :{}'.format(param.data_folder_path + '/operation_bid.xlsx'))
+        else:
+            hold_df['our_pnl'] = compute_pnl(best_bids, \
+                                             hold_df['ActualVolumes'],\
+                                             hold_df['Take_From'],\
+                                             hold_df['Feed_Into'],\
+                                             hold_df['DayAheadPrice'])
 
-        # evaluation
-        hold_df['baseline_pnl'] = compute_pnl(hold_df['First_Forecast_Volume'], hold_df['ActualVolumes'], \
-                                              hold_df['true_DA'],hold_df['Take_From'])
+            hold_df['base_pnl'] = compute_pnl(hold_df['First_Forecast_Volume'], \
+                                                            hold_df['ActualVolumes'], \
+                                                            hold_df['Take_From'],\
+                                                            hold_df['Feed_Into'],\
+                                                            hold_df['DayAheadPrice'])
 
-        hold_df['our_pnl'] = compute_pnl(hold_df['our_bid'], hold_df['ActualVolumes'], \
-                                         hold_df['true_DA'], hold_df['Take_From'])
-        total_baseline_pnl = sum(hold_df['baseline_pnl'])
-        improvement = sum(hold_df['our_pnl']) - total_baseline_pnl
-        print('total_baseline_pnl = {}'.format(sum(hold_df['baseline_pnl'])))
-        print('our_pnl-baseline_pnl= {}'.format(improvement))
-        experiment_result.append(improvement*100/abs(total_baseline_pnl))
+            improve = hold_df['our_pnl'] - hold_df['base_pnl']
+            total_improve = sum(improve)
+            total_our_pnl = sum(hold_df['our_pnl'])
+            total_base_pnl = sum(hold_df['base_pnl'])
+            print('total baseline pnl:\n{}'.format(total_base_pnl))
+            print('total our pnl:\n{}'.format(total_our_pnl))
+            print('total improve:\n{}'.format(total_improve))
+            experiment_result.append(total_improve*100/abs(total_base_pnl))
 
-        # save result to file
-        # daily pnl
-        daily_base_pnl = hold_df.groupby('Date')['baseline_pnl'].mean().reset_index()
-        daily_base_pnl = daily_base_pnl.rename(columns={'baseline_pnl':'base_pnl_daily'})
-        daily_our_pnl = hold_df.groupby('Date')['our_pnl'].mean().reset_index()
-        daily_our_pnl = daily_our_pnl.rename(columns={'our_pnl':'our_pnl_daily'})
+            a = hold_df[ hold_df['our_bid']!= hold_df['First_Forecast_Volume']]
+            b = a[ a['base_pnl']<= a['our_pnl']]
+            print('{}% get improved'.format( round(100* len(b)/len(a), 2)))
 
-        daily_base_pnl_var = hold_df.groupby('Date')['baseline_pnl'].var().reset_index()
-        daily_base_pnl_var = daily_base_pnl_var.rename(columns={'baseline_pnl':'base_daily_pnlvar'})
-        daily_our_pnl_var = hold_df.groupby('Date')['our_pnl'].var().reset_index()
-        daily_our_pnl_var = daily_our_pnl_var.rename(columns={'our_pnl':'our_daily_pnlvar'})
+            c = hold_df[ hold_df['base_pnl']> hold_df['our_pnl']]
+            c['loss'] = c['base_pnl']-c['our_pnl']
+            avg_loss = sum(c['loss'])/len(c)
+            print('avg loss = {}'.format( round(avg_loss,4)))
 
-        # daily variance
-        daily_pnl = daily_base_pnl.merge(daily_our_pnl,on='Date',how='inner')
-        daily_pnl_var = daily_base_pnl_var.merge(daily_our_pnl_var,on='Date',how='inner')
-        evaluation = daily_pnl.merge(daily_pnl_var, on='Date',how='inner')
+            avg_win = sum(b['our_pnl']-b['base_pnl'])/len(c)
+            print('avg win = {}'.format( round(avg_win), 4))
 
-        path1=param.hold_out_prediction_path + 'strategy_'+ str(strategy) +'_exp'+ str(current_experiment)+'_evaluate.xlsx'
-        evaluation.to_excel(path1, index = False)
-        path2=param.hold_out_prediction_path + 'strategy_' + str(strategy) + '_exp' + str(current_experiment) + '.xlsx'
-        hold_df.to_excel(path2, index=False)
-        print('save result to:\n{}\n{}'.format(path1,path2))
+            # save result to file
+            # daily pnl
+            base_daily_sum = hold_df.groupby('Date')['base_pnl'].sum().reset_index()
+            base_daily_sum = base_daily_sum.rename(columns={'base_pnl':'base_pnl_sum'})
+            our_daily_sum = hold_df.groupby('Date')['our_pnl'].sum().reset_index()
+            our_daily_sum = our_daily_sum.rename(columns={'our_pnl':'our_pnl_sum'})
+            base_daily_var = hold_df.groupby('Date')['base_pnl'].var().reset_index()
+            base_daily_var = base_daily_var.rename(columns={'base_pnl':'base_pnl_var'})
+            our_daily_var = hold_df.groupby('Date')['our_pnl'].var().reset_index()
+            our_daily_var = our_daily_var.rename(columns={'our_pnl':'our_pnl_var'})
 
-        # print
-        a = hold_df[ hold_df['our_bid']!= hold_df['First_Forecast_Volume']]
-        b = a[ a['baseline_pnl']<= a['our_pnl']]
-        print('{}% used strategy'.format( round(100*len(a)/len(hold_df),2)))
-        print('{}% get improved'.format( round(100* len(b)/len(a), 2)))
+            saved_result = base_daily_sum.merge(our_daily_sum, on='Date',how='inner')
+            saved_result = saved_result.merge(base_daily_var, on='Date',how='inner')
+            saved_result = saved_result.merge(our_daily_var, on='Date',how='inner')
 
-        c = hold_df[ hold_df['baseline_pnl']> hold_df['our_pnl']]
-        c['loss'] = c['baseline_pnl']-c['our_pnl']
-        avg_loss = sum(c['loss'])/len(c)
-        print('avg loss = {}'.format( round(avg_loss,4)))
-
-        avg_win = sum(b['our_pnl']-b['baseline_pnl'])/len(c)
-        print('avg win = {}'.format( round(avg_win), 4))
-
-    print('improvement percentage:')
-    print(experiment_result)
-    print('avg = {}, max = {}, min = {}'. format(sum(experiment_result)/len(experiment_result), \
-                                                 max(experiment_result),\
-                                                 min(experiment_result)))
+            path1=param.hold_out_prediction_path + 'strategy_'+ str(strategy) +'_exp'+ str(current_experiment)+'_evaluate.xlsx'
+            saved_result.to_excel(path1, index = False)
+            path2=param.hold_out_prediction_path + 'strategy_' + str(strategy) + '_exp' + str(current_experiment) + '.xlsx'
+            hold_df.to_excel(path2, index=False)
+            print('save result to:\n{}\n{}'.format(path1,path2))
+    if evaluate:
+        print('improvement percentage:')
+        print(experiment_result)
+        print('avg = {}, max = {}, min = {}'. format(sum(experiment_result)/len(experiment_result), \
+                                                     max(experiment_result),\
+                                                     min(experiment_result)))

@@ -3,10 +3,11 @@ import utils.hardcode_parameters as param
 from features.features import plot_feature_importance
 from models.CrossValidate import cross_validation, Evaluator
 from features.make_feature import make_feat_pipeline
+import pickle
 
 if __name__ == '__main__':
     model = XGBRegressor()
-    # model =
+
     df, df_config = Configuration().readFile('OTC-DA')
     df = TimeSeriesData(df, df_config.date_col, df_config.forecast_v, pteCol=df_config.pte_col).file
     target = 'DA'
@@ -18,7 +19,7 @@ if __name__ == '__main__':
 
     # train-evaluate split
     lag_dict = {target:[96],
-               'VWAP': [0,96,96*2]}
+               'VWAP': [96,96*2]}
     X, y = make_feat_pipeline(target, df_config.forecast_v, df_config.date_col, lag_dict, df, standardize=False)
 
     train_x, hold_x = X[:hold_split_index], X[hold_split_index:]
@@ -31,21 +32,24 @@ if __name__ == '__main__':
     # train_data_to_dataRobot.to_excel(param.data_folder_path + '/data_robot/DA_train_feat.xlsx', index = False)
     # test_data_to_dataRobot.to_excel(param.data_folder_path + '/data_robot/DA_test_feat.xlsx', index = False)
 
-    # cross validation
+    # # cross validation
     out, feat_cols = cross_validation(train_x, train_y, model, classification=False,n_folds=15)
-
+    #
     cv_max_score = min(out['test_MAPE(%)'])
     model = out['models'][out['test_MAPE(%)'].index(cv_max_score)]
+    pickle.dump(model, open("DA_OTC_XGB.pickle.dat", "wb"))
+
     # cv_avg_score = np.mean(np.array(out['test_MAPE(%)']))
     print('cross validation:\nMAPE(%)={}'.format(round(cv_max_score,6)))
-
-    # feature importance
+    #
+    # # feature importance
     if model_name == 'XGB':
         feat_imp = plot_feature_importance(model, feat_cols)[-10:]
         print(feat_imp)
 
     # hold-out test
     print('hold-out:')
+    model = pickle.load(open("DA_OTC_XGB.pickle.dat","rb"))
     X,y = make_feat_pipeline(target, df_config.forecast_v, df_config.date_col, lag_dict, hold_df, standardize=False)
     prediction = model.predict(X)
     hold_metrics = Evaluator(prediction, y).regression_metrics()

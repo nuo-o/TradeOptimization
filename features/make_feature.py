@@ -2,7 +2,7 @@ from utils.import_packages import *
 from features.features import make_date_feature, make_lag_feat, standardize_feat, plot_feature_importance,train_test_split
 
 
-def make_feat_pipeline(target, valCol, dateCol, lag_dict, df, standardize = True):
+def make_feat_pipeline(target, valCol, dateCol, lag_dict, df, standardize = True, dropDate=True):
     # extract weekday, month, dayofyear, year, isholiday
     df = make_date_feature(dateCol, df)
     # df = df.drop([dateCol], axis =1)
@@ -28,12 +28,13 @@ def make_feat_pipeline(target, valCol, dateCol, lag_dict, df, standardize = True
         temp_val = ','.join(lag_name)
         ts = TimeSeriesData(temp_df, dateCol, temp_val)
         ts.extract_PTE()
-        ts.fill_nan_by_avg(lag_name)
+        # ts.fill_nan_by_avg(lag_name)
 
-        if (0 in lag_value) | (lag_column == target):
-            df = pd.concat([df, ts.file[lag_name]],axis=1)
-        else:
-            df = pd.concat([df.drop([lag_column], axis = 1), ts.file[temp_val]],axis=1)
+        df = pd.concat([df, ts.file[lag_name]], axis = 1)
+        # if (0 in lag_value) | (lag_column == target):
+        #     df = pd.concat([df, ts.file[lag_name]],axis=1)
+        # else:
+        #     df = pd.concat([df.drop([lag_column], axis = 1), ts.file[temp_val]],axis=1)
         # lag_col_name.extend(lag_name)
 
     # fill missing values for lag data
@@ -48,7 +49,16 @@ def make_feat_pipeline(target, valCol, dateCol, lag_dict, df, standardize = True
         df = standardize_feat(df, num_col)
 
     # return feats and targets
-    y = df[target]
-    X = df.drop([target, dateCol],axis=1)
-
+    if target!=None:
+        y = df[target]
+        if dropDate:
+            X = df.drop([target, dateCol],axis=1)
+        else:
+            X = df.drop([target], axis = 1)
+    else:
+        y = None
+        if dropDate:
+            X = df.drop([target, dateCol], axis= 1)
+        else:
+            X = df.drop([target], axis = 1)
     return X, y

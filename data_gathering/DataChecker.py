@@ -75,12 +75,13 @@ class DataChecker():
 
 if __name__ == '__main__':
 
-    file = 'final-take'
-    print('check file:{}...'.format(file))
+    # file = 'baseline'
+    # print('check file:{}...'.format(file))
     # df, config = Configuration().readFile(file)
 
-    df = pd.read_excel( param.data_folder_path + '/day-ahead/raw-da-two-tables.xlsx', sheet_name='Sheet1')
-
+    df = pd.read_excel(param.data_folder_path + '/results/hold-out-prediction/strategy_1_exp1.xlsx')
+    # df = pd.read_excel( param.data_folder_path + '/plant/clean_plant.xlsx', sheet_name='Sheet1')
+    # df = pd.read_csv( param.data_folder_path + '/plant/w.csv')
     # if no realtime column, first convert
     # ts =TimeSeriesData(df, config.date_col, config.forecast_v, pteCol = config.pte_col)
     # df = ts.file
@@ -93,7 +94,7 @@ if __name__ == '__main__':
 
     checker = DataChecker(df)
     a = checker.check_missing_dates( 'DeliveryDate' )
-    checker.check_duplicate_forecast( ['DeliveryDate','Name'])
+    checker.check_duplicate_forecast( ['DeliveryDate'])
     # forecast_v = config.forecast_v.split(',')
     #
     # for col in forecast_v:
