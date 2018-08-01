@@ -73,7 +73,7 @@ def search_best_mean_var(da, sim_take_prices, sim_feed_prices, mpe, v, bid_space
         for (take, feed) in zip(sim_take_prices, sim_feed_prices):
             sim_pnl = compute_pnl([b],[actual_v],[take],[feed],[da])
             sim_PNL.append(sim_pnl)
-        objective_v = sim_PNL.mean() / sim_PNL.var()
+        objective_v = np.array(sim_PNL).mean() / np.array(sim_PNL).var()
 
         if best_objective_v < objective_v:
             best_objective_v = objective_v
@@ -148,7 +148,11 @@ if __name__ == '__main__':
 #############################
     imb = pd.read_excel(param.data_folder_path + '/a_simulation.xlsx')
     hold_df = pd.read_excel(param.data_folder_path + '/b_simulation_.xlsx')
-    evaluate = False
+    evaluate = True
+    hold_df = hold_df.dropna(subset=['First_Forecast_Volume', 'predict_DA', 'predict_DA_daily'])
+
+    if evaluate:
+        hold_df = hold_df.dropna(subset=['DayAheadPrice','Take_From','Feed_Into','ActualVolumes'])
 
     strategy = 1
     num_resample = 1000
@@ -170,19 +174,14 @@ if __name__ == '__main__':
         feed_kde = None
         take_multipliers = None
         feed_multipliers = None
-        different_bid = []
 
-        tempt = datetime(2018,7,1)
         while row_id<len(hold_df):
-            #
-            # if row_id %10000:
-            #     print('processed:{}%'.format(int(100*(row_id+1)/len(hold_df))))
+
+            if row_id %1000==0:
+                print('processed:{}%'.format(int(100*(row_id+1)/len(hold_df))))
 
             d,p,v,da,da_daily =hold_df.iloc[row_id][['Date','PERIOD','First_Forecast_Volume','predict_DA','predict_DA_daily']]
 
-            if d > tempt:
-                print()
-                tempt = d
             if last_sim_day !=d:
                 take_kde, take_multipliers = get_simulated_imb_price(imb,'PERIOD',d,'DeliveryDate',num_historical_days,'Take_From')
                 feed_kde, feed_multipliers = get_simulated_imb_price(imb,'PERIOD',d,'DeliveryDate',num_historical_days,'Feed_Into')
@@ -205,11 +204,11 @@ if __name__ == '__main__':
 
                 best_bid = search_best_sum_var(da, sim_take_prices, sim_feed_prices, 0, v, bid_space)
 
-            elif strategy ==3:
-                sim_take_prices = take_kde.resample(num_resample) * da_daily * take_multipliers[p]
-                sim_feed_prices = feed_kde.resample(num_resample) * da_daily * feed_multipliers[p]
-
-                best_bid = search_best_mean_var(da, sim_take_prices, sim_feed_prices, 0, v, bid_space)
+            # elif strategy ==3:
+            #     sim_take_prices = take_kde.resample(num_resample) * da_daily * take_multipliers[p]
+            #     sim_feed_prices = feed_kde.resample(num_resample) * da_daily * feed_multipliers[p]
+            #
+            #     best_bid = search_best_mean_var(da, sim_take_prices, sim_feed_prices, 0, v, bid_space)
 
             # elif strategy == 4: # use DA>TAKE prediction as a heuristic strategy
             #     if random.uniform(0,1)>= da_prob:

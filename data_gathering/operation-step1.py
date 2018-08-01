@@ -5,7 +5,7 @@ import pickle
 
 
 if __name__ == '__main__':
-    target_date_start = datetime(2018, 8,1)
+    target_date_start = datetime(2018, 1,1)
 
     model = pickle.load(open("../models/DA_OTC_XGB.pickle.dat", "rb"))
     df = pd.read_excel(param.data_folder_path + '/trade/OTC_lag_DA.xlsx', sheet_name='Sheet1')

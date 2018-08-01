@@ -5,7 +5,7 @@ import utils.hardcode_parameters as param
 if __name__ == '__main__':
     df = pd.read_excel(param.data_folder_path + '/b_simulation.xlsx', index = False)
 
-    new_df = df[df['Date']>=datetime(2018,8,1)]
+    new_df = df[df['Date']>=datetime(2018,1,1)]
     pred_da = pd.read_excel(param.data_folder_path + '/operation_pred_DA.xlsx', sheet_name='Sheet1')
 
     new_df = new_df.drop(['predict_DA','predict_DA_daily'],axis=1)
