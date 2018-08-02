@@ -79,7 +79,12 @@ if __name__ == '__main__':
     # print('check file:{}...'.format(file))
     # df, config = Configuration().readFile(file)
 
-    df = pd.read_excel(param.data_folder_path + '/results/hold-out-prediction/strategy_1_exp1.xlsx')
+    df = pd.read_excel(param.data_folder_path + '/trade/OTC_lag_DA.xlsx')
+
+    con = Configuration()
+    df['DeliveryDate'] = con.add_time_to_date(df,'DeliveryDate','start')
+    df = df.sort_values(by='DeliveryDate')
+
     # df = pd.read_excel( param.data_folder_path + '/plant/clean_plant.xlsx', sheet_name='Sheet1')
     # df = pd.read_csv( param.data_folder_path + '/plant/w.csv')
     # if no realtime column, first convert

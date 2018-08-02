@@ -5,23 +5,26 @@ import pickle
 
 
 if __name__ == '__main__':
-    target_date_start = datetime(2018, 1,1)
-
-    model = pickle.load(open("../models/DA_OTC_XGB.pickle.dat", "rb"))
-    df = pd.read_excel(param.data_folder_path + '/trade/OTC_lag_DA.xlsx', sheet_name='Sheet1')
-    df = df.drop(['TRADEDATE'], axis = 1)
+    predict_date_start = datetime(2018, 7, 30)
 
     target = 'DA'
     forecast_v ='VWAP,DA'
     dateCol = 'DeliveryDate'
     lag_dict = {target: [96],
                 'VWAP': [96, 96 * 2]}
+
+    model = pickle.load(open("../models/DA_OTC_XGB.pickle.dat", "rb"))
+
     max_lag_days = 2
-    predict_day_start = target_date_start - timedelta(days=max_lag_days)
-    df = df[df[dateCol] >= predict_day_start]
+    lag_date_start = predict_date_start - timedelta(days=max_lag_days)
+    df = pd.read_excel(param.operation_folder + '/OTC_lag_DA.xlsx', sheet_name='Sheet1')
+    df = df[df[dateCol] >= lag_date_start]
+    df = df.drop(['TRADEDATE'], axis = 1)
+
     X,_ = make_feat_pipeline(target,forecast_v,dateCol,lag_dict,df,standardize=False,dropDate=False)
-    X = X[X[dateCol]>=target_date_start]
-    df = df[df[dateCol]>=target_date_start]
+    X = X[X[dateCol] >= predict_date_start]
+
+    df = df[df[dateCol] >= predict_date_start]
     feat = X.drop([dateCol], axis =1)
     prediction = model.predict(feat)
 
@@ -33,7 +36,7 @@ if __name__ == '__main__':
     con = Configuration()
     df['DeliveryDate'] = con.add_time_to_date(df,'DeliveryDate','start')
     df = df.drop(['start'], axis=1)
-    # merge to operation file
-    df.to_excel(param.data_folder_path + '/operation_pred_DA.xlsx',index=False)
+
+    df.to_excel(param.operation_folder + '/operation_pred_DA.xlsx',index=False)
 
 

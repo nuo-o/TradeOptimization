@@ -7,12 +7,12 @@ import pickle
 
 if __name__ == '__main__':
     model = XGBRegressor()
+    model_name = 'XGB'
 
     df, df_config = Configuration().readFile('OTC-DA')
     df = TimeSeriesData(df, df_config.date_col, df_config.forecast_v, pteCol=df_config.pte_col).file
     target = 'DA'
-    model_name = 'XGB'
-    # use 2016.1 to 2018.1 data for training DA price
+
     hold_split_index = train_test_split(df, df_config.date_col, splitBySize=False, split_date=param.hold_out_date_begin)
     train_df, hold_df = df[:hold_split_index], df[hold_split_index:]
     print('train:test = {}:{}'.format(round( len(train_df)/len(df), 2),round( len(hold_df)/len(df), 4)))
@@ -25,24 +25,18 @@ if __name__ == '__main__':
     train_x, hold_x = X[:hold_split_index], X[hold_split_index:]
     train_y, hold_y = y[:hold_split_index], y[hold_split_index:]
 
-    # train_data_to_dataRobot = train_x
-    # train_data_to_dataRobot[target] = train_y
-    # test_data_to_dataRobot = hold_x
-    # test_data_to_dataRobot[target] = hold_y
-    # train_data_to_dataRobot.to_excel(param.data_folder_path + '/data_robot/DA_train_feat.xlsx', index = False)
-    # test_data_to_dataRobot.to_excel(param.data_folder_path + '/data_robot/DA_test_feat.xlsx', index = False)
-
-    # # cross validation
+    # cross validation
     out, feat_cols = cross_validation(train_x, train_y, model, classification=False,n_folds=15)
-    #
+
+    # get the best model
     cv_max_score = min(out['test_MAPE(%)'])
     model = out['models'][out['test_MAPE(%)'].index(cv_max_score)]
     pickle.dump(model, open("DA_OTC_XGB.pickle.dat", "wb"))
 
     # cv_avg_score = np.mean(np.array(out['test_MAPE(%)']))
     print('cross validation:\nMAPE(%)={}'.format(round(cv_max_score,6)))
-    #
-    # # feature importance
+
+    # feature importance
     if model_name == 'XGB':
         feat_imp = plot_feature_importance(model, feat_cols)[-10:]
         print(feat_imp)

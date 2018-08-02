@@ -113,46 +113,15 @@ def build_search_bid_space(v, a, b, min_ratio=0.5, max_ratio=1.5,interval=0.1):
 
 
 if __name__ == '__main__':
-    #
-    # con = Configuration()
-    # imb, imb_config = con.readFile('baseline')
-    # imb = imb[['Take_From','Feed_Into','DeliveryDate','DayAheadPrice','ActualVolumes','First_Forecast_Volume','PERIOD']]
-    # imb = imb.rename(columns={'DeliveryDate':'Date','TotalPnL':'base_pnl'})
-    # imb['DeliveryDate'] = con.add_time_to_date(imb,'Date','PERIOD')
-    # print(len(imb))
-    # imb = imb.dropna()
-    # print(len(imb))
-    #
-    # daily_da = imb.groupby('Date')['DayAheadPrice'].mean()
-    # imb = imb.join(daily_da,on='Date',rsuffix='_daily')
-    # daily_take = imb.groupby('Date')['Take_From'].mean()
-    # imb = imb.join(daily_take, on='Date', rsuffix='_daily')
-    # daily_feed = imb.groupby('Date')['Feed_Into'].mean()
-    # imb = imb.join(daily_feed, on='Date', rsuffix='_daily')
-    #
-    # hold_df = imb[imb['DeliveryDate']>=param.hold_out_date_begin]
-    # # predict_da_take_prob = pd.read_excel(param.data_folder_path+'/results/hold-out-prediction/TAKE_AUC_0.5893.xlsx')
-    # # hold_df = hold_df.merge(predict_da_take_prob,on='DeliveryDate',how='inner')
-    #
-    # est_DA, _ = Configuration().readFile('predict-DA')
-    # mpe, _ = Configuration().readFile('predict-MPE')
-    # hold_df = hold_df.merge(est_DA, on='DeliveryDate', how='inner')
-    # hold_df = hold_df.merge(mpe,on='DeliveryDate',how='inner')
-    # est_DA_daily = hold_df.groupby('Date')['predict_DA'].mean().reset_index()
-    # est_DA_daily = est_DA_daily.rename(columns={'predict_DA':'predict_DA_daily'})
-    # hold_df = hold_df.merge(est_DA_daily,on='Date',how='inner')
-    #
-    # imb.to_excel(param.data_folder_path + '/a_simulation.xlsx', index = False)
-    # hold_df.to_excel(param.data_folder_path + '/b_simulation.xlsx',index = False)
 
-#############################
-    imb = pd.read_excel(param.data_folder_path + '/a_simulation.xlsx')
-    hold_df = pd.read_excel(param.data_folder_path + '/b_simulation_.xlsx')
-    evaluate = True
-    hold_df = hold_df.dropna(subset=['First_Forecast_Volume', 'predict_DA', 'predict_DA_daily'])
+    imb = pd.read_excel(param.operation_folder + '/a_simulation.xlsx')
+    hold_df = pd.read_excel(param.operation_folder + '/b_simulation_.xlsx')
+    result_saved_path = param.operation_folder + '/results/'
 
-    if evaluate:
-        hold_df = hold_df.dropna(subset=['DayAheadPrice','Take_From','Feed_Into','ActualVolumes'])
+    np.random.seed(123)
+
+    hold_df = hold_df.dropna(subset=['First_Forecast_Volume', 'predict_DA','predict_DA_daily'])
+    imb = imb.dropna(subset=['Take_From','Feed_Into'])
 
     strategy = 1
     num_resample = 1000
@@ -176,11 +145,11 @@ if __name__ == '__main__':
         feed_multipliers = None
 
         while row_id<len(hold_df):
-
             if row_id %1000==0:
                 print('processed:{}%'.format(int(100*(row_id+1)/len(hold_df))))
 
             d,p,v,da,da_daily =hold_df.iloc[row_id][['Date','PERIOD','First_Forecast_Volume','predict_DA','predict_DA_daily']]
+            row_id += 1
 
             if last_sim_day !=d:
                 take_kde, take_multipliers = get_simulated_imb_price(imb,'PERIOD',d,'DeliveryDate',num_historical_days,'Take_From')
@@ -195,7 +164,6 @@ if __name__ == '__main__':
             if (strategy == 1):
                 sim_take_prices = take_kde.resample(num_resample)*da_daily*take_multipliers[p]
                 sim_feed_prices = feed_kde.resample(num_resample)*da_daily*feed_multipliers[p]
-
                 best_bid = search_best_quantile(da, sim_take_prices, sim_feed_prices, 0, v, bid_space)
 
             elif (strategy == 2):
@@ -224,69 +192,7 @@ if __name__ == '__main__':
             #         best_bid = v * 0.5
 
             best_bids.append(best_bid)
-            row_id +=1
 
         hold_df['our_bid'] = best_bids
-        if not evaluate:
-            hold_df.to_excel(param.data_folder_path + '/operation_bid.xlsx', index = False)
-            print('save predicted bid value to :{}'.format(param.data_folder_path + '/operation_bid.xlsx'))
-        else:
-            hold_df['our_pnl'] = compute_pnl(best_bids, \
-                                             hold_df['ActualVolumes'],\
-                                             hold_df['Take_From'],\
-                                             hold_df['Feed_Into'],\
-                                             hold_df['DayAheadPrice'])
-
-            hold_df['base_pnl'] = compute_pnl(hold_df['First_Forecast_Volume'], \
-                                                            hold_df['ActualVolumes'], \
-                                                            hold_df['Take_From'],\
-                                                            hold_df['Feed_Into'],\
-                                                            hold_df['DayAheadPrice'])
-
-            improve = hold_df['our_pnl'] - hold_df['base_pnl']
-            total_improve = sum(improve)
-            total_our_pnl = sum(hold_df['our_pnl'])
-            total_base_pnl = sum(hold_df['base_pnl'])
-            print('total baseline pnl:\n{}'.format(total_base_pnl))
-            print('total our pnl:\n{}'.format(total_our_pnl))
-            print('total improve:\n{}'.format(total_improve))
-            experiment_result.append(total_improve*100/abs(total_base_pnl))
-
-            a = hold_df[ hold_df['our_bid']!= hold_df['First_Forecast_Volume']]
-            b = a[ a['base_pnl']<= a['our_pnl']]
-            print('{}% get improved'.format( round(100* len(b)/len(a), 2)))
-
-            c = hold_df[ hold_df['base_pnl']> hold_df['our_pnl']]
-            c['loss'] = c['base_pnl']-c['our_pnl']
-            avg_loss = sum(c['loss'])/len(c)
-            print('avg loss = {}'.format( round(avg_loss,4)))
-
-            avg_win = sum(b['our_pnl']-b['base_pnl'])/len(c)
-            print('avg win = {}'.format( round(avg_win), 4))
-
-            # save result to file
-            # daily pnl
-            base_daily_sum = hold_df.groupby('Date')['base_pnl'].sum().reset_index()
-            base_daily_sum = base_daily_sum.rename(columns={'base_pnl':'base_pnl_sum'})
-            our_daily_sum = hold_df.groupby('Date')['our_pnl'].sum().reset_index()
-            our_daily_sum = our_daily_sum.rename(columns={'our_pnl':'our_pnl_sum'})
-            base_daily_var = hold_df.groupby('Date')['base_pnl'].var().reset_index()
-            base_daily_var = base_daily_var.rename(columns={'base_pnl':'base_pnl_var'})
-            our_daily_var = hold_df.groupby('Date')['our_pnl'].var().reset_index()
-            our_daily_var = our_daily_var.rename(columns={'our_pnl':'our_pnl_var'})
-
-            saved_result = base_daily_sum.merge(our_daily_sum, on='Date',how='inner')
-            saved_result = saved_result.merge(base_daily_var, on='Date',how='inner')
-            saved_result = saved_result.merge(our_daily_var, on='Date',how='inner')
-
-            path1=param.hold_out_prediction_path + 'strategy_'+ str(strategy) +'_exp'+ str(current_experiment)+'_evaluate.xlsx'
-            saved_result.to_excel(path1, index = False)
-            path2=param.hold_out_prediction_path + 'strategy_' + str(strategy) + '_exp' + str(current_experiment) + '.xlsx'
-            hold_df.to_excel(path2, index=False)
-            print('save result to:\n{}\n{}'.format(path1,path2))
-    if evaluate:
-        print('improvement percentage:')
-        print(experiment_result)
-        print('avg = {}, max = {}, min = {}'. format(sum(experiment_result)/len(experiment_result), \
-                                                     max(experiment_result),\
-                                                     min(experiment_result)))
+        hold_df.to_excel(param.operation_folder + '/operation_bid.xlsx', index = False)
+        print('save predicted bid value to :{}'.format(param.operation_folder + '/operation_bid.xlsx'))
