@@ -114,6 +114,11 @@ def build_search_bid_space(v, a, b, min_ratio=0.5, max_ratio=1.5,interval=0.1):
 
 if __name__ == '__main__':
 
+    """This file runs price simulation and generate the best bid.
+    Input file: a_simulation(historical price), b_simulation_
+    Output file: operation_bid.xlsx
+    """
+
     imb = pd.read_excel(param.operation_folder + '/a_simulation.xlsx')
     hold_df = pd.read_excel(param.operation_folder + '/b_simulation_.xlsx')
     result_saved_path = param.operation_folder + '/results/'

@@ -16,6 +16,10 @@ def append_to_xlsx(path, df):
 
 if __name__ == '__main__':
 
+    """This file evaluates the total p&l against the baseline.
+    Before running this file, the true price data and actual volume should be copied to operation_bid.xlsx. 
+    """
+
     strategy = 1
     hold_df = pd.read_excel(param.operation_folder + '/operation_bid.xlsx')
     evaluate_start_date = datetime(2018,1,1)

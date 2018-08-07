@@ -1,10 +1,14 @@
 from utils.import_packages import *
 import utils.hardcode_parameters as param
-from features.make_feature import make_feat_pipeline, make_date_feature, make_lag_feat
+from features.make_feature import make_feat_pipeline
 import pickle
 
 
 if __name__ == '__main__':
+    """Input: OTC price(history+deliveryday)
+    Output: predict_DA_daily, predict_DA price per pte.
+    Results are saved in /data/operation/operation_pred_DA.xlsx"""
+
     predict_date_start = datetime(2018, 7, 30)
 
     target = 'DA'

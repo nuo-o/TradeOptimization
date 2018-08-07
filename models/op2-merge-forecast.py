@@ -3,7 +3,9 @@ import utils.hardcode_parameters as param
 
 
 if __name__ == '__main__':
-    """The b_simulation_.xlsx file is for merged predict_DA and predict_DA_daily.
+    """Input file: b_simulation.xlsx, operation_pred_DA
+    Output file: b_simulation_.xlsx
+    This file is to merge the predicted daily DA and hourly DA with forecast volume. 
     """
 
     df = pd.read_excel(param.operation_folder + '/b_simulation.xlsx', index = False)
