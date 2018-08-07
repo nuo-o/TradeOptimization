@@ -14,14 +14,11 @@ if __name__ == '__main__':
     pred_da = pd.read_excel(param.operation_folder + '/operation_pred_DA.xlsx', sheet_name='Sheet1')
 
     new_df = new_df.drop(['predict_DA','predict_DA_daily'],axis=1)
-    new_df = new_df.merge(pred_da.drop(['VWAP'], axis=1), left_on='DATETIME_START', right_on='DeliveryDate',
-                          how='inner')
+    new_df = new_df.merge(pred_da.drop(['VWAP'],axis =1), on='DeliveryDate',how= 'inner')
 
     # df = pd.concat([new_df, df], axis = 0)
     df = new_df
-    df = df.drop('DeliveryDate_y', axis=1)
-    df = df.rename(columns={'DeliveryDate_x': 'DeliveryDate'})
-    df = df.sort_values(by=['DeliveryDate','PERIOD'])
+    df = df.sort_values(by=['DeliveryDate'])
     # df = df.dropna(subset=['predict_DA','First_Forecast_Volume'])
     # df = df[['Date','First_Forecast_Volume','PERIOD','DeliveryDate','predict_DA','predict_DA_daily']]
     df.to_excel(param.operation_folder + '/b_simulation_.xlsx', index = False)
