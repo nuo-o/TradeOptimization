@@ -1,15 +1,15 @@
 from utils.import_packages import *
 import utils.hardcode_parameters as param
-from features.make_feature import make_feat_pipeline
+from features.make_feature import make_feat_pipeline, make_date_feature, make_lag_feat
 import pickle
 
 
 if __name__ == '__main__':
     """Input: OTC price(history+deliveryday)
-    Output: predict_DA_daily, predict_DA price per pte.
-    Results are saved in /data/operation/operation_pred_DA.xlsx"""
+        Output: predict_DA_daily, predict_DA price per pte.
+        Results are saved in /data/operation/operation_pred_DA.xlsx"""
 
-    predict_date_start = datetime(2018, 7, 30)
+    predict_date_start = datetime(2018, 3, 1)
 
     target = 'DA'
     forecast_v ='VWAP,DA'
@@ -33,7 +33,12 @@ if __name__ == '__main__':
     prediction = model.predict(feat)
 
     df['predict_DA'] = prediction
-    df['predict_DA_daily'] = [prediction.mean()]*len(X)
+    df_daily = df.groupby(dateCol).mean()
+    df_daily = df_daily.reset_index()
+    df_daily = df_daily[[dateCol, 'predict_DA']]
+    df_daily = df_daily.rename(columns={'predict_DA': 'predict_DA_daily'})
+    df = pd.merge(df, df_daily, how='inner', on=dateCol)
+    ##df['predict_DA_daily'] = [prediction.mean()]*len(X)
 
     df = df[['VWAP','DeliveryDate','start','predict_DA','predict_DA_daily']]
 

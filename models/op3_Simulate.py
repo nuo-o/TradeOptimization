@@ -113,7 +113,6 @@ def build_search_bid_space(v, a, b, min_ratio=0.5, max_ratio=1.5,interval=0.1):
 
 
 if __name__ == '__main__':
-
     """This file runs price simulation and generate the best bid.
     Input file: a_simulation(historical price), b_simulation_
     Output file: operation_bid.xlsx
@@ -157,8 +156,8 @@ if __name__ == '__main__':
             row_id += 1
 
             if last_sim_day !=d:
-                take_kde, take_multipliers = get_simulated_imb_price(imb,'PERIOD',d,'DeliveryDate',num_historical_days,'Take_From')
-                feed_kde, feed_multipliers = get_simulated_imb_price(imb,'PERIOD',d,'DeliveryDate',num_historical_days,'Feed_Into')
+                take_kde, take_multipliers = get_simulated_imb_price(imb,'Period',d,'DeliveryDate',num_historical_days,'Take_From')
+                feed_kde, feed_multipliers = get_simulated_imb_price(imb,'Period',d,'DeliveryDate',num_historical_days,'Feed_Into')
                 last_sim_day = d
 
             bid_space = build_search_bid_space(v, min_bid_value_when_forecast_zero, bid_interval_when_forecast_zero)
