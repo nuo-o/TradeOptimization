@@ -151,9 +151,9 @@ if __name__ == '__main__':
     hold_df = hold_df.dropna(subset=['First_Forecast_Volume', 'predict_DA','predict_DA_daily'])
     imb = imb.dropna(subset=['Take_From','Feed_Into'])
 
-    strategy = 6
-    num_resample = 1000
-    num_historical_days = 60
+    strategy = 1
+    num_resample = 800
+    num_historical_days = 10
     min_bid_value_when_forecast_zero = -1000
     bid_interval_when_forecast_zero = 10
     experiment_times = 1

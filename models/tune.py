@@ -29,25 +29,25 @@ if __name__ == '__main__':
     result_saved_path = param.operation_folder + '/results/'
 
     """parameters that needs to train"""
-    num_resample = 1000
-    # num_historical_days = 120
+    num_resample = 800
+    num_historical_days = 10
     min_bid_value_when_forecast_zero = -1000
     bid_interval_when_forecast_zero = 10
 
     current_experiment = 0
     experiment_result = []
 
-    tune_historical_days = [7, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120]
-    experiment_times = len(tune_historical_days)
+    tune = [3, 5, 7, 10, 20,30]
+    experiment_times = len(tune)
 
     tune_result = []
     a_simulation = imb.copy()
 
     print('strategy:{}'.format(strategy))
     while current_experiment < experiment_times:
-        num_historical_days = tune_historical_days[current_experiment]
+        num_historical_days = tune[current_experiment]
         print('\nexperiment:{}'.format(current_experiment))
-        print('history:{} days'.format(num_historical_days))
+        print('tune:{}'.format(num_historical_days))
 
         row_id = 0
         best_bids = []
@@ -135,5 +135,5 @@ if __name__ == '__main__':
     print(max(tune_result), min(tune_result))
 
     plt.figure()
-    plt.plot(tune_historical_days, tune_result)
+    plt.plot(tune, tune_result)
     plt.show()

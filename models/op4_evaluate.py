@@ -21,8 +21,8 @@ if __name__ == '__main__':
     """
 
     strategy = 1
-    hold_df = pd.read_excel(param.operation_folder + '/operation_bid.xlsx')
-    evaluate_start_date = datetime(2018,1,1)
+    hold_df = pd.read_excel(param.operation_folder + '/operation_bid_true.xlsx')
+    evaluate_start_date = datetime(2018,2,1)
     evaluate_end_date = datetime(2018,12,1)
     hold_df = hold_df[(hold_df['DeliveryDate']<evaluate_end_date) & (hold_df['DeliveryDate']>=evaluate_start_date)]
     hold_df = hold_df.dropna(subset=['First_Forecast_Volume','ActualVolumes','DayAheadPrice'])
