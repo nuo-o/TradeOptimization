@@ -13,7 +13,14 @@ if __name__ == '__main__':
     df = TimeSeriesData(df, df_config.date_col, df_config.forecast_v, pteCol=df_config.pte_col).file
     target = 'DA'
 
-    hold_split_index = train_test_split(df, df_config.date_col, splitBySize=False, split_date=param.hold_out_date_begin)
+    train_date_start = datetime(2015,1,3)
+    hold_out_date_start = datetime(2017,8,22)
+    hold_out_date_end = datetime(2018,7, 23)
+
+    df = df[(df[df_config.date_col] >= train_date_start) & (df[df_config.date_col]<=hold_out_date_end)]
+    df = df.dropna(subset=['VWAP','DA'])
+
+    hold_split_index = train_test_split(df, df_config.date_col, splitBySize=False, split_date=hold_out_date_start)
     train_df, hold_df = df[:hold_split_index], df[hold_split_index:]
     print('train:test = {}:{}'.format(round( len(train_df)/len(df), 2),round( len(hold_df)/len(df), 4)))
 
@@ -26,7 +33,7 @@ if __name__ == '__main__':
     train_y, hold_y = y[:hold_split_index], y[hold_split_index:]
 
     # cross validation
-    out, feat_cols = cross_validation(train_x, train_y, model, classification=False,n_folds=15)
+    out, feat_cols = cross_validation(train_x, train_y, model, classification=False,n_folds=10)
 
     # get the best model
     cv_max_score = min(out['test_MAPE(%)'])

@@ -9,7 +9,7 @@ if __name__ == '__main__':
         Output: predict_DA_daily, predict_DA price per pte.
         Results are saved in /data/operation/operation_pred_DA.xlsx"""
 
-    predict_date_start = datetime(2018, 3, 1)
+    predict_date_start = datetime(2017,8,1)
 
     target = 'DA'
     forecast_v ='VWAP,DA'

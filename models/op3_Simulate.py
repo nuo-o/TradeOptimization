@@ -2,6 +2,27 @@ from utils.import_packages import *
 import utils.hardcode_parameters as param
 from scipy.stats.kde import gaussian_kde
 from data_gathering.DataChecker import *
+import pickle
+
+
+def max_mean_dev_diff(da, sim_take_prices, sim_feed_prices, mpe, v, bid_space):
+    best_objective_v = -math.inf
+    best_bid = v
+    actual_v = v - v*mpe
+
+    for b in bid_space:
+        sim_PNL = []
+        for (take,feed) in zip(sim_take_prices, sim_feed_prices):
+            sim_pnl = compute_pnl([b], [actual_v], [take], [feed], [da])
+            sim_PNL.append(sim_pnl)
+        sim_PNL = np.array(sim_PNL)
+        objective_v = sim_PNL.sum()/len(sim_PNL) - np.std(sim_PNL)
+
+        if best_objective_v < objective_v:
+            best_objective_v = objective_v
+            best_bid = b
+
+    return best_bid
 
 
 def compute_pnl(bid, actual_vol, take_price, feed_price, da_price):
@@ -17,6 +38,7 @@ def compute_pnl(bid, actual_vol, take_price, feed_price, da_price):
                 price_diff = da-feed
 
             pnl = vol_diff*price_diff/1000
+
             PNL.append(pnl)
     else:
         raise ValueError('wrong length of data for computing pnl')
@@ -83,7 +105,7 @@ def search_best_mean_var(da, sim_take_prices, sim_feed_prices, mpe, v, bid_space
 
 
 def get_simulated_imb_price(history, pteCol, curTime, dateTimeCol,history_days,imbPriceType):
-    history_start = curTime - timedelta(days=history_days)
+    history_start = curTime - timedelta(days=int(history_days))
     history = history[(history[dateTimeCol]<curTime)&(history[dateTimeCol]>=history_start)]
 
     # daily Imb/DA
@@ -104,10 +126,12 @@ def build_search_bid_space(v, a, b, min_ratio=0.5, max_ratio=1.5,interval=0.1):
     if v == 0:
         bid_space = np.arange(a, 0, b)
     elif v > 0:
-
         bid_space = np.arange(int(v * min_ratio), min(int(v * max_ratio), 25000), min(max(int(v * interval), 5), 25000))
     else:
         bid_space = np.arange(max(-1000, int(v * 2)), int(v * 0.5), max(int(v * 0.1), 5))
+
+    # if (True in (bid_space / v > 1.5)) and ( v >0):
+    #     print()
 
     return bid_space
 
@@ -127,7 +151,7 @@ if __name__ == '__main__':
     hold_df = hold_df.dropna(subset=['First_Forecast_Volume', 'predict_DA','predict_DA_daily'])
     imb = imb.dropna(subset=['Take_From','Feed_Into'])
 
-    strategy = 1
+    strategy = 6
     num_resample = 1000
     num_historical_days = 60
     min_bid_value_when_forecast_zero = -1000
@@ -135,6 +159,14 @@ if __name__ == '__main__':
     experiment_times = 1
     current_experiment = 0
     experiment_result = []
+
+    if 5<=strategy<=6:
+        month_pickle_dict = {}
+        for month in range(1, 13):
+            savePath = param.operation_folder + '/month_' + str(month) + '.pickle'
+            with open( savePath, 'rb') as handle:
+                month_pickle_dict[month] = pickle.load(handle)
+
 
     while current_experiment < experiment_times:
         current_experiment += 1
@@ -153,7 +185,6 @@ if __name__ == '__main__':
                 print('processed:{}%'.format(int(100*(row_id+1)/len(hold_df))))
 
             d,p,v,da,da_daily =hold_df.iloc[row_id][['Date','PERIOD','First_Forecast_Volume','predict_DA','predict_DA_daily']]
-            row_id += 1
 
             if last_sim_day !=d:
                 take_kde, take_multipliers = get_simulated_imb_price(imb,'Period',d,'DeliveryDate',num_historical_days,'Take_From')
@@ -176,11 +207,41 @@ if __name__ == '__main__':
 
                 best_bid = search_best_sum_var(da, sim_take_prices, sim_feed_prices, 0, v, bid_space)
 
-            # elif strategy ==3:
-            #     sim_take_prices = take_kde.resample(num_resample) * da_daily * take_multipliers[p]
-            #     sim_feed_prices = feed_kde.resample(num_resample) * da_daily * feed_multipliers[p]
-            #
-            #     best_bid = search_best_mean_var(da, sim_take_prices, sim_feed_prices, 0, v, bid_space)
+            elif strategy ==3:
+                sim_take_prices = take_kde.resample(num_resample) * da_daily * take_multipliers[p]
+                sim_feed_prices = feed_kde.resample(num_resample) * da_daily * feed_multipliers[p]
+
+                best_bid = max_mean_dev_diff(da, sim_take_prices, sim_feed_prices, 0, v, bid_space)
+
+            elif strategy ==4:
+                pass
+
+            elif strategy ==5:
+                # test da-spread strategy
+                timestamp,p10, p90 = hold_df.iloc[row_id][['DeliveryDate', 'P10', 'P90']]
+                month = int(timestamp.month)
+                weekday = int(timestamp.dayofweek+1)
+                hour = int(timestamp.hour)
+
+                lookup = month_pickle_dict[month][weekday][hour]
+
+                if lookup >=0:
+                    best_bid = p90
+                else:
+                    best_bid = p10
+
+            elif strategy == 6:
+                timestamp, p10, p90 = hold_df.iloc[row_id][['DeliveryDate', 'P10', 'P90']]
+                month = int(timestamp.month)
+                weekday = int(timestamp.dayofweek+1)
+                hour = int(timestamp.hour)
+
+                lookup = month_pickle_dict[month][weekday][hour]
+
+                if lookup <= 0:
+                    best_bid = p90
+                else:
+                    best_bid = p10
 
             # elif strategy == 4: # use DA>TAKE prediction as a heuristic strategy
             #     if random.uniform(0,1)>= da_prob:
@@ -194,9 +255,11 @@ if __name__ == '__main__':
             #         best_bid = v * 1.5
             #     else:
             #         best_bid = v * 0.5
-
+            row_id+=1
             best_bids.append(best_bid)
 
         hold_df['our_bid'] = best_bids
         hold_df.to_excel(param.operation_folder + '/operation_bid.xlsx', index = False)
         print('save predicted bid value to :{}'.format(param.operation_folder + '/operation_bid.xlsx'))
+
+        print(sum(best_bids))
