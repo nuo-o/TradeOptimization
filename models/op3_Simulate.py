@@ -151,7 +151,7 @@ if __name__ == '__main__':
     hold_df = hold_df.dropna(subset=['First_Forecast_Volume', 'predict_DA','predict_DA_daily'])
     imb = imb.dropna(subset=['Take_From','Feed_Into'])
 
-    strategy = 1
+    strategy = 8
     num_resample = 800
     num_historical_days = 10
     min_bid_value_when_forecast_zero = -1000
@@ -163,7 +163,13 @@ if __name__ == '__main__':
     if 5<=strategy<=6:
         month_pickle_dict = {}
         for month in range(1, 13):
-            savePath = param.operation_folder + '/month_' + str(month) + '.pickle'
+            savePath = param.operation_folder + '/' + 'Feed-DA' + '_month_' + str(month) + '.pickle'
+            with open( savePath, 'rb') as handle:
+                month_pickle_dict[month] = pickle.load(handle)
+    elif 7<=strategy<=8:
+        month_pickle_dict = {}
+        for month in range(1, 13):
+            savePath = param.operation_folder + '/' + 'Con-Feed' + '_month_' + str(month) + '.pickle'
             with open( savePath, 'rb') as handle:
                 month_pickle_dict[month] = pickle.load(handle)
 
@@ -243,6 +249,37 @@ if __name__ == '__main__':
                 else:
                     best_bid = p10
 
+            elif strategy ==7:
+                """Take-Feed spread"""
+                timestamp, p10, p90 = hold_df.iloc[row_id][['DeliveryDate', 'P10', 'P90']]
+                month = int(timestamp.month)
+                weekday = int(timestamp.dayofweek+1)
+                hour = int(timestamp.hour)
+
+                lookup = month_pickle_dict[month][weekday][hour]
+
+                if lookup < 0:
+                    best_bid = p90
+                elif lookup >0:
+                    best_bid = p10
+                else:
+                    best_bid = v
+
+            elif strategy ==8:
+                """Take-Feed spread"""
+                timestamp, p10, p90 = hold_df.iloc[row_id][['DeliveryDate', 'P10', 'P90']]
+                month = int(timestamp.month)
+                weekday = int(timestamp.dayofweek+1)
+                hour = int(timestamp.hour)
+
+                lookup = month_pickle_dict[month][weekday][hour]
+
+                if lookup > 0:
+                    best_bid = p90
+                elif lookup <0:
+                    best_bid = p10
+                else:
+                    best_bid = v
             # elif strategy == 4: # use DA>TAKE prediction as a heuristic strategy
             #     if random.uniform(0,1)>= da_prob:
             #         if da_prob >=0.5:

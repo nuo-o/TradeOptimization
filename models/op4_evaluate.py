@@ -20,10 +20,10 @@ if __name__ == '__main__':
     Before running this file, the true price data and actual volume should be copied to operation_bid.xlsx. 
     """
 
-    strategy = 1
+    strategy = 8
     hold_df = pd.read_excel(param.operation_folder + '/operation_bid_true.xlsx')
     evaluate_start_date = datetime(2018,2,1)
-    evaluate_end_date = datetime(2018,12,1)
+    evaluate_end_date = datetime(2018,8,1)
     hold_df = hold_df[(hold_df['DeliveryDate']<evaluate_end_date) & (hold_df['DeliveryDate']>=evaluate_start_date)]
     hold_df = hold_df.dropna(subset=['First_Forecast_Volume','ActualVolumes','DayAheadPrice'])
 
