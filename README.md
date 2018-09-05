@@ -1,2 +1,3 @@
 # TradeOptimization
-optimization problem
+
+This is the code for a UCL master dissertation. 
